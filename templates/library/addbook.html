@@ -85,6 +85,13 @@
     	.signup-form form a:hover {
     		text-decoration: underline;
     	}
+
+			.center {
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+				width: 50%;
+			}
     </style>
 
 
@@ -101,7 +108,7 @@
     <div class="signup-form">
         <form  method="post" class="form-horizontal">
 
-    			<center><h2>ADD BOOK IN LIBRARY</h2></center>
+    			<h2 class="center">ADD BOOK IN LIBRARY</h2>
 
 {% csrf_token %}
 
