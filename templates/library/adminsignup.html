@@ -106,7 +106,9 @@
 {% csrf_token %}
             {% for field in form %}
             <div class="form-group">
-              <label class="control-label col-xs-4">{{ field.label_tag }}</label>
+              <label class="control-label col-xs-4" for="{{ field.id_for_label }}">
+				{{ field.label_tag }}
+			</label>
               <div class="col-xs-8">
               {{ field }}
                </div>
