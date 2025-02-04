@@ -84,7 +84,7 @@ def addbook_view(request):
         #now this form have data from html
         form=forms.BookForm(request.POST)
         if form.is_valid():
-            user=form.save()
+            form.save()
             return render(request,'library/bookadded.html')
     return render(request,'library/addbook.html',{'form':form})
 
