@@ -48,7 +48,7 @@ def studentsignup_view(request):
             user.save()
             f2=form2.save(commit=False)
             f2.user=user
-            user2=f2.save()
+            f2.save()
 
             my_student_group = Group.objects.get_or_create(name='STUDENT')
             my_student_group[0].user_set.add(user)
