@@ -175,7 +175,7 @@ def viewissuedbookbystudent(request):
         li2.append(t)
 
     return render(request,'library/viewissuedbookbystudent.html',{'li1':li1,'li2':li2})
-def returnbook(request, id):
+def returnbook(_, id):
     issued_book = models.IssuedBook.objects.get(pk=id)
     issued_book.status = "Returned"
     issued_book.save()
