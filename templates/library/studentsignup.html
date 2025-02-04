@@ -10,15 +10,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-
-
-
-
-
-
-
-
-
     <style type="text/css">
     	body {
     		color: #aa082e;
@@ -95,11 +86,6 @@
     	}
     </style>
 
-
-
-
-
-
   </head>
   <body>
     {% include "library/navbar.html" %}
@@ -115,7 +101,9 @@
 
             {% for field in form1 %}
             <div class="form-group">
-              <label class="control-label col-xs-4">{{ field.label_tag }}</label>
+              <label class="control-label col-xs-4" for="{{ field.id_for_label }}">
+                {{ field.label_tag }}
+              </label>
               <div class="col-xs-8">
               {{ field }}
                </div>
