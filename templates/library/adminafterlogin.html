@@ -13,7 +13,7 @@
 
       .btn-circle {
         width: 30px;
-        height: 30px; 
+        height: 30px;
         padding: 6px 0px;
         border-radius: 15px;
         text-align: center;
@@ -28,13 +28,20 @@
       .jumbotron h1 {
         text-align: center;
       }
+
+      .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+      }
     </style>
   </head>
   <body>
     {% include "library/navbaradmin.html" %}
     <br>
     <br>
-    <center><h3 style="margin-bottom: 0px;" class="alert alert-success">Welcome to Online Library!</h3></center>
+    <h3 style="margin-bottom: 0px;" class="alert alert-success center">Welcome to Online Library!</h3>
     <div class="jumbotron" style="margin-bottom: 0px;">
       <h1 class="display-4">Hello {{user.first_name}}!</h1>
       <p class="lead">
