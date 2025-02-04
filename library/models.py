@@ -1,5 +1,5 @@
-from django.db import models
-from django.contrib.auth.models import User
+from django.db import models 
+from django.contrib.auth.models import User 
 from datetime import datetime,timedelta
 
 
@@ -41,7 +41,6 @@ class IssuedBook(models.Model):
     #moved this in forms.py
     #enrollment=[(student.enrollment,str(student.get_name)+' ['+str(student.enrollment)+']') for student in StudentExtra.objects.all()]
     enrollment=models.CharField(max_length=30)
-    #isbn=[(str(book.isbn),book.name+' ['+str(book.isbn)+']') for book in Book.objects.all()]
     isbn=models.CharField(max_length=30)
     issuedate=models.DateField(auto_now=True)
     expirydate=models.DateField(default=get_expiry)
