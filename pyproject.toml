@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "trabalho-mds"
+version = "0.1.0"
+description = ""
+authors = ["zMarcoos <marcosvdcdef@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+asgiref = "3.2.7"
+django = "3.0.5"
+django-widget-tweaks = "1.4.8"
+pytz = "2020.1"
+sqlparse = "0.3.1"
+setuptools = "^75.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

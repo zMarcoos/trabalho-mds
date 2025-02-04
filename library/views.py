@@ -70,7 +70,7 @@ def is_student(user):
 def afterlogin_view(request):
     if is_admin(request.user):
         return render(request,'library/adminafterlogin.html')
-    
+
     elif(is_student(request.user)):
         return render(request,'library/studentafterlogin.html')
 
@@ -134,7 +134,7 @@ def viewissuedbook_view(request):
         books=list(models.Book.objects.filter(isbn=ib.isbn))
         students=list(models.StudentExtra.objects.filter(enrollment=ib.enrollment))
         i=0
-        for l in books:
+        for _ in books:
             t=(students[i].get_name,students[i].enrollment,books[i].name,books[i].author,issdate,expdate,fine,ib.status)
             i=i+1
             li.append(t)
