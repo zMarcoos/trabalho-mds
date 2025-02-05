@@ -30,14 +30,20 @@
   text-align: center;
 }
 
-
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    text-align: center;
+}
 </style>
   </head>
   <body>
     {% include "library/navbarstudent.html" %}
     <br>
     <br>
-    <center><h3 style=" margin-bottom: 0px;"class = 'alert alert-success'>Welcome to Online library !</h3></center>
+    <h3 style=" margin-bottom: 0px;"class = 'alert alert-success center'>Welcome to Online library !</h3>
     <div class="jumbotron"   style="    margin-bottom: 0px;">
     <h1 class="display-4">Hello {{user.first_name}} !</h1>
     <p class="lead">As you are Student, you can see how many book you have taken from library with fine and many more ...!
