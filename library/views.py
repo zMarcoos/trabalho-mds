@@ -27,14 +27,6 @@ def adminclick_view(request):
         return HttpResponseRedirect('afterlogin')
     return render(request,'library/adminclick.html')
 
-
-
-
-
-
-
-
-
 def studentsignup_view(request):
     form1=forms.StudentUserForm()
     form2=forms.StudentExtraForm()
@@ -55,8 +47,6 @@ def studentsignup_view(request):
 
         return HttpResponseRedirect('studentlogin')
     return render(request,'library/studentsignup.html',context=mydict)
-
-
 
 
 def is_admin(user):
