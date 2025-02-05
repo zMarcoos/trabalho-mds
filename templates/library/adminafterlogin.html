@@ -1,65 +1,71 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <title>Library Management</title>
-    <style media="screen">
-      .btn-circle.btn-xl {
-        width: 70px;
-        height: 70px;
-        padding: 10px 16px;
-        border-radius: 35px;
-        font-size: 24px;
-        line-height: 1.33;
-      }
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Library Management</title>
 
-      .btn-circle {
-        width: 30px;
-        height: 30px;
-        padding: 6px 0px;
-        border-radius: 15px;
-        text-align: center;
-        font-size: 12px;
-        line-height: 1.42857;
-      }
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-      .jumbotron {
-        margin-top: 0px;
-        margin-bottom: 0px;
-      }
-      .jumbotron h1 {
-        text-align: center;
-      }
+  <style>
+    .btn-circle.btn-xl {
+      width: 70px;
+      height: 70px;
+      padding: 10px 16px;
+      border-radius: 35px;
+      font-size: 24px;
+      line-height: 1.33;
+    }
 
-      .center {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
-        text-align: center;
-      }
-    </style>
-  </head>
-  <body>
-    {% include "library/navbaradmin.html" %}
-    <br>
-    <br>
-    <h3 style="margin-bottom: 0px;" class="alert alert-success center">Welcome to Online Library!</h3>
-    <div class="jumbotron" style="margin-bottom: 0px;">
-      <h1 class="display-4">Hello {{user.first_name}}!</h1>
+    .btn-circle {
+      width: 30px;
+      height: 30px;
+      padding: 6px 0px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.42857;
+    }
+
+    .jumbotron {
+      margin-bottom: 0;
+      text-align: center;
+    }
+
+    .options a {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  {% include "library/navbaradmin.html" %}
+
+  <div class="container mt-5">
+    <h3 class="alert alert-success text-center">Welcome to Online Library!</h3>
+
+    <div class="jumbotron bg-light p-5 rounded">
+      <h1 class="display-4">Hello, Admin!</h1>
       <p class="lead">
-        As you are Admin, you can add a book to the library, view available books,
-        issue books to students, view issued books, and many more!
+        As an Admin, you can add books to the library, view available books,
+        issue books to students, view issued books, and much more!
       </p>
       <hr class="my-4">
       <p>Options Available For You</p>
-      <div class="options" style="text-align:center">
-        <a href="addbook" class="btn btn-primary btn-lg active">Add Book To Library</a><br><br>
-        <a href="viewbook" class="btn btn-primary btn-lg active">View Available Book</a><br><br>
-        <a href="issuebook" class="btn btn-primary btn-lg active">Issue New Book</a><br><br>
-        <a href="viewissuedbook" class="btn btn-primary btn-lg active">View Issued Book</a><br><br>
-        <a href="viewstudent" class="btn btn-primary btn-lg active">View Student</a>
+
+      <div class="options d-grid gap-3 col-6 mx-auto">
+        <a href="addbook" class="btn btn-primary btn-lg">Add Book To Library</a>
+        <a href="viewbook" class="btn btn-primary btn-lg">View Available Books</a>
+        <a href="issuebook" class="btn btn-primary btn-lg">Issue New Book</a>
+        <a href="viewissuedbook" class="btn btn-primary btn-lg">View Issued Books</a>
+        <a href="viewstudent" class="btn btn-primary btn-lg">View Students</a>
       </div>
     </div>
-    {% include "library/footer.html" %}
-  </body>
+  </div>
+
+  {% include "library/footer.html" %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

@@ -2,87 +2,72 @@
 {% load static %}
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Bootstrap 4 Static Navbar with Dropdown and Search Form</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Library Management</title>
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-<style type="text/css">
-    .bs-example{
-        margin: 0px;
-
+  <style>
+    .navbar-brand {
+      font-size: 20px;
+      font-family: sans-serif;
     }
-.navbar-brand{
-  font-size: 20px;
-  font-family: sans-serif;
-
-}
-
-
-</style>
+  </style>
 </head>
 <body>
 
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <div class="container">
+    <a href="/" class="navbar-brand">Library Management</a>
 
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-<div class="bs-example">
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
-        <a href="/" class="navbar-brand">Library Management</a>
-        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+      <div class="navbar-nav">
+        <a href="/" class="nav-item nav-link active">Home</a>
 
-        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-            <div class="navbar-nav">
-                <a href="/" class="nav-item nav-link active">Home</a>
-
-                <!--for book dropdown button-->
-                <div class="nav-item dropdown">
-                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Book</a>
-                  <div class="dropdown-menu">
-                    <a href="addbook" class="dropdown-item">Add Book</a>
-                    <a href="viewbook" class="dropdown-item">View Book</a>
-                  </div>
-                </div>
-
-                <!--for issuebook dropdown button-->
-                <div class="nav-item dropdown">
-                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Issue Book</a>
-                  <div class="dropdown-menu">
-                    <a href="issuebook" class="dropdown-item">Issue New Book</a>
-                    <a href="viewissuedbook" class="dropdown-item">View Issued Book</a>
-                  </div>
-                </div>
-
-                <!--for student dropdown button-->
-                <div class="nav-item dropdown">
-                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Student</a>
-                  <div class="dropdown-menu">
-                    <a href="viewstudent" class="dropdown-item">View Student</a>
-                  </div>
-                </div>
-
-
-            </div>
-
-            <div class="navbar-nav">
-                <a href="logout" class="nav-item nav-link">LOGOUT</a> &nbsp
-                <a href="/aboutus" class="nav-item nav-link">About Us</a>
-                <a href="contactus" class="nav-item nav-link">Contact Us</a>
-            </div>
-
-
-
-
+        <div class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" id="bookDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Book
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="bookDropdown">
+            <li><a href="addbook" class="dropdown-item">Add Book</a></li>
+            <li><a href="viewbook" class="dropdown-item">View Book</a></li>
+          </ul>
         </div>
-    </nav>
-</div>
 
+        <div class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" id="issueDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Issue Book
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="issueDropdown">
+            <li><a href="issuebook" class="dropdown-item">Issue New Book</a></li>
+            <li><a href="viewissuedbook" class="dropdown-item">View Issued Book</a></li>
+          </ul>
+        </div>
 
+        <div class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" id="studentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Student
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="studentDropdown">
+            <li><a href="viewstudent" class="dropdown-item">View Student</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="navbar-nav">
+        <a href="logout" class="nav-item nav-link">LOGOUT</a>
+        <a href="/aboutus" class="nav-item nav-link">About Us</a>
+        <a href="contactus" class="nav-item nav-link">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
