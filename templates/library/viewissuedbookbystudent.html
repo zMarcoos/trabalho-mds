@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Books Issued To You</title>
 
-    <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -38,11 +37,18 @@
             font-weight: bold;
             border-radius: 5px;
             transition: background 0.3s ease-in-out;
+            cursor: pointer;
+            border: none;
         }
 
         .btn-return:hover {
             background-color: #820606;
             color: white;
+        }
+
+        .btn-return.disabled {
+            background-color: gray !important;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -53,7 +59,7 @@
     <div class="container mt-5">
         <h3 class="p-3 mb-2 bg-primary text-white text-center">Books Issued To You</h3>
 
-        {% if li1 %}
+        {% if combined_data %}
         <div class="table-responsive">
             <table class="table table-bordered table-custom">
                 <thead>
@@ -71,28 +77,32 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for student, book in combined_data %}
+                    {% for student_name, enrollment, branch, book_name, author, issue_date, expiry_date, fine, status, book_id in combined_data %}
                     <tr>
-                        <td>{{ student.0 }}</td>
-                        <td>{{ student.1 }}</td>
-                        <td>{{ student.2 }}</td>
-                        <td>{{ student.3 }}</td>
-                        <td>{{ student.4 }}</td>
-                        <td>{{ book.0 }}</td>
-                        <td>{{ book.1 }}</td>
+                        <td>{{ student_name }}</td>
+                        <td>{{ enrollment }}</td>
+                        <td>{{ branch }}</td>
+                        <td>{{ book_name }}</td>
+                        <td>{{ author }}</td>
+                        <td>{{ issue_date }}</td>
+                        <td>{{ expiry_date }}</td>
                         <td>
-                            {% if book.3 == "Returned" %}
+                            {% if status == "Returned" %}
                                 No Fine
                             {% else %}
-                                {{ book.2 }}
+                                {{ fine }}
                             {% endif %}
                         </td>
-                        <td>{{ book.3 }}</td>
+                        <td id="status-{{ book_id }}">{{ status }}</td>
                         <td>
-                            {% if book.3 == "Issued" %}
-                            <a href="{% url 'returnbook' book.4 %}" class="btn-return">
-                                Return
-                            </a>
+                            {% if status == "Issued" %}
+                                <button data-book-id="{{ book_id }}" class="btn-return" onclick="returnBook(this)">
+                                    Return
+                                </button>
+                            {% else %}
+                                <button class="btn-return disabled" disabled>
+                                    Returned
+                                </button>
                             {% endif %}
                         </td>
                     </tr>
@@ -108,5 +118,27 @@
     {% include "library/footer.html" %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function returnBook(button) {
+            const bookId = button.getAttribute("data-book-id");
+            document.getElementById(`status-${bookId}`).innerText = "Returned";
+
+            button.innerText = "Returned";
+            button.classList.add("disabled");
+            button.setAttribute("disabled", "true");
+
+            fetch(`/returnbook/${bookId}/`)
+                .then(response => {
+                    if (response.ok) return;
+
+                    alert("Erro ao devolver o livro. Tente novamente.");
+                    location.reload();
+                })
+                .catch(() => {
+                    alert("Erro ao conectar ao servidor.");
+                    location.reload();
+                });
+        }
+    </script>
 </body>
 </html>

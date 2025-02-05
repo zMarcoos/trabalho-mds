@@ -1,39 +1,37 @@
+import os
+import logging
 from django.shortcuts import redirect, render
 from django.http import HttpResponseRedirect
 from . import forms,models
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import Group
-from django.contrib import auth
 from django.contrib.auth.decorators import login_required,user_passes_test
-from datetime import datetime,timedelta,date
+from datetime import date
 from django.core.mail import send_mail
 from librarymanagement.settings import EMAIL_HOST_USER
 
+logger = logging.getLogger(__name__)
+
+#VER ISSO AQUI AQQ
+def is_authenticated(request) -> object:
+    if request.user.is_authenticated: return HttpResponseRedirect('afterlogin')
 
 def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
+
     return render(request,'library/index.html')
 
-#for showing signup/login button for student
 def studentclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
+
     return render(request,'library/studentclick.html')
 
-#for showing signup/login button for teacher
 def adminclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'library/adminclick.html')
-
-
-
-
-
-
-
-
 
 def studentsignup_view(request):
     form1=forms.StudentUserForm()
@@ -150,47 +148,71 @@ def viewstudent_view(request):
 
 @login_required(login_url='studentlogin')
 def viewissuedbookbystudent(request):
-    student=models.StudentExtra.objects.filter(user_id=request.user.id)
-    issuedbook=models.IssuedBook.objects.filter(enrollment=student[0].enrollment)
+    student = models.StudentExtra.objects.filter(user=request.user).first()
 
-    li1=[]
+    if not student:
+        return render(request, 'library/viewissuedbookbystudent.html', {'combined_data': []})
 
-    li2=[]
-    for ib in issuedbook:
-        books=models.Book.objects.filter(isbn=ib.isbn)
-        for book in books:
-            t=(request.user,student[0].enrollment,student[0].branch,book.name,book.author)
-            li1.append(t)
-        issdate=str(ib.issuedate.day)+'-'+str(ib.issuedate.month)+'-'+str(ib.issuedate.year)
-        expdate=str(ib.expirydate.day)+'-'+str(ib.expirydate.month)+'-'+str(ib.expirydate.year)
-        #fine calculation
-        days=(date.today()-ib.issuedate)
-        print(date.today())
-        d=days.days
-        fine=0
-        if d>15:
-            day=d-15
-            fine=day*10
-        t=(issdate,expdate,fine,ib.status,ib.id)
-        li2.append(t)
+    issued_books = models.IssuedBook.objects.filter(enrollment=student.enrollment)
+    combined_data = []
 
-    return render(request,'library/viewissuedbookbystudent.html',{'li1':li1,'li2':li2})
+    for issued_book in issued_books:
+        book = models.Book.objects.filter(isbn=issued_book.isbn).first()
+
+        if book:
+            issdate = issued_book.issuedate.strftime('%d-%m-%Y')
+            expdate = issued_book.expirydate.strftime('%d-%m-%Y')
+
+            days = (date.today() - issued_book.issuedate).days
+            fine = max((days - 15) * 10, 0) if days > 15 else 0
+
+            combined_data.append((
+                student.get_name, student.enrollment, student.branch,
+                book.name, book.author, issdate, expdate, fine, issued_book.status, issued_book.id
+            ))
+
+    return render(request, 'library/viewissuedbookbystudent.html', {'combined_data': combined_data})
+
 def returnbook(_, id):
     issued_book = models.IssuedBook.objects.get(pk=id)
     issued_book.status = "Returned"
     issued_book.save()
     return redirect('viewissuedbookbystudent')
+
 def aboutus_view(request):
     return render(request,'library/aboutus.html')
 
 def contactus_view(request):
-    sub = forms.ContactusForm()
+    submit = forms.ContactusForm()
+
     if request.method == 'POST':
-        sub = forms.ContactusForm(request.POST)
-        if sub.is_valid():
-            email = sub.cleaned_data['Email']
-            name=sub.cleaned_data['Name']
-            message = sub.cleaned_data['Message']
-            send_mail(str(name)+' || '+str(email),message, EMAIL_HOST_USER, ['wapka1503@gmail.com'], fail_silently = False)
-            return render(request, 'library/contactussuccess.html')
-    return render(request, 'library/contactus.html', {'form':sub})
+        submit = forms.ContactusForm(request.POST)
+
+        if submit.is_valid():
+            email = submit.cleaned_data['Email']
+            name = submit.cleaned_data['Name']
+            message = submit.cleaned_data['Message']
+
+            subject = f"{name} || {email}"
+            recipient_list = [os.getenv('RECIPIENT_EMAIL', 'zmarcoos12@gmail.com')]
+
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    EMAIL_HOST_USER,
+                    recipient_list,
+                    fail_silently=False,
+                )
+
+                return render(request, 'library/contactussuccess.html')
+
+            except Exception as exception:
+                logger.error(f"Erro ao enviar e-mail: {exception}")
+
+                return render(request, 'library/contactus.html', {
+                    'form': submit,
+                    'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.'
+                })
+
+    return render(request, 'library/contactus.html', {'form': submit})

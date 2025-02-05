@@ -33,6 +33,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application definition
 
@@ -136,5 +137,5 @@ EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'sumitproject1503@gmail.com'
-EMAIL_HOST_PASSWORD = 'sumityoyo'
+EMAIL_HOST_USER = 'zmarcoos12@gmail.com'
+EMAIL_HOST_PASSWORD = 'fkot wbfs jerp kiql'
