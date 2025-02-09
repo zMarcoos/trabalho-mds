@@ -138,4 +138,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'zmarcoos12@gmail.com'
-EMAIL_HOST_PASSWORD = 'fkot wbfs jerp kiql'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
