@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
 from datetime import date
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.views.decorators.csrf import csrf_protect
 
 from . import forms, models
 from librarymanagement.settings import EMAIL_HOST_USER
@@ -200,11 +201,14 @@ def return_book(_, id):
 def aboutus_view(request):
     return render(request, 'library/aboutus.html')
 
+@csrf_protect
 @require_http_methods(["GET", "POST"])
 def contactus_view(request):
-    submit = forms.ContactusForm(request.POST or None)
+    if request.method == 'GET':
+        return render(request, 'library/contactus.html', {'form': forms.ContactusForm()})
 
-    if request.method == 'POST' and submit.is_valid():
+    submit = forms.ContactusForm(request.POST)
+    if submit.is_valid():
         email = submit.cleaned_data['Email']
         name = submit.cleaned_data['Name']
         message = submit.cleaned_data['Message']
