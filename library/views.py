@@ -50,24 +50,28 @@ def is_student(user):
 
 # ------------------ Views de Cadastro ------------------ #
 
-@require_http_methods(["GET", "POST"])
+@csrf_protect
 def student_signup_view(request):
-    first_form = forms.StudentUserForm(request.POST or None)
-    second_form = forms.StudentExtraForm(request.POST or None)
+    if request.method == 'GET':
+        return render(request, 'library/studentsignup.html', {'form1': forms.StudentUserForm(), 'form2': forms.StudentExtraForm()})
 
-    if request.method == 'POST' and first_form.is_valid() and second_form.is_valid():
-        student_account = first_form.save()
-        student_account.set_password(student_account.password)
-        student_account.save()
+    if request.method == 'POST':
+        first_form = forms.StudentUserForm(request.POST)
+        second_form = forms.StudentExtraForm(request.POST)
 
-        student_extra_data = second_form.save(commit=False)
-        student_extra_data.user = student_account
-        student_extra_data.save()
+        if first_form.is_valid() and second_form.is_valid():
+            student_account = first_form.save()
+            student_account.set_password(student_account.password)
+            student_account.save()
 
-        my_student_group, _ = Group.objects.get_or_create(name='STUDENT')
-        my_student_group.user_set.add(student_account)
+            student_extra_data = second_form.save(commit=False)
+            student_extra_data.user = student_account
+            student_extra_data.save()
 
-        return HttpResponseRedirect('studentlogin')
+            my_student_group, _ = Group.objects.get_or_create(name='STUDENT')
+            my_student_group.user_set.add(student_account)
+
+            return HttpResponseRedirect('studentlogin')
 
     return render(request, 'library/studentsignup.html', {'form1': first_form, 'form2': second_form})
 
@@ -84,12 +88,17 @@ def after_login_view(request):
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
-@require_http_methods(["GET", "POST"])
+@csrf_protect
 def add_book_view(request):
-    form = forms.BookForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        return render(request, 'library/bookadded.html')
+    if request.method == 'GET':
+        return render(request, 'library/addbook.html', {'form': forms.BookForm()})
+
+    if request.method == 'POST':
+        form = forms.BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'library/bookadded.html')
+
     return render(request, 'library/addbook.html', {'form': form})
 
 @login_required(login_url='adminlogin')
@@ -201,26 +210,27 @@ def return_book(_, id):
 def aboutus_view(request):
     return render(request, 'library/aboutus.html')
 
+
 @csrf_protect
-@require_http_methods(["GET", "POST"])
 def contactus_view(request):
     if request.method == 'GET':
         return render(request, 'library/contactus.html', {'form': forms.ContactusForm()})
 
-    submit = forms.ContactusForm(request.POST)
-    if submit.is_valid():
-        email = submit.cleaned_data['Email']
-        name = submit.cleaned_data['Name']
-        message = submit.cleaned_data['Message']
+    if request.method == 'POST':
+        submit = forms.ContactusForm(request.POST)
+        if submit.is_valid():
+            email = submit.cleaned_data['Email']
+            name = submit.cleaned_data['Name']
+            message = submit.cleaned_data['Message']
 
-        subject = f"{name} || {email}"
-        recipient_list = [os.getenv('RECIPIENT_EMAIL', 'zmarcoos12@gmail.com')]
+            subject = f"{name} || {email}"
+            recipient_list = [os.getenv('RECIPIENT_EMAIL', 'zmarcoos12@gmail.com')]
 
-        try:
-            send_mail(subject, message, EMAIL_HOST_USER, recipient_list, fail_silently=False)
-            return render(request, 'library/contactussuccess.html')
-        except Exception as exception:
-            logger.error(f"Erro ao enviar e-mail: {exception}")
-            return render(request, 'library/contactus.html', {'form': submit, 'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.'})
+            try:
+                send_mail(subject, message, EMAIL_HOST_USER, recipient_list, fail_silently=False)
+                return render(request, 'library/contactussuccess.html')
+            except Exception as exception:
+                logger.error(f"Erro ao enviar e-mail: {exception}")
+                return render(request, 'library/contactus.html', {'form': submit, 'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.'})
 
     return render(request, 'library/contactus.html', {'form': submit})
