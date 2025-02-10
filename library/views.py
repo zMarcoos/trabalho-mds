@@ -14,34 +14,42 @@ from django.views.decorators.http import require_http_methods
 
 logger = logging.getLogger(__name__)
 
+
 @require_http_methods(["GET"])
 def custom_logout_view(request):
     logout(request)
     return redirect('/')
 
+
 @require_http_methods(["GET"])
 def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
+
     return render(request, 'library/index.html')
+
 
 @require_http_methods(["GET"])
 def student_click_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
-    return render(request, 'library/studentclick.html')
+
+    return render(request, 'library/student/student_click.html')
+
 
 @require_http_methods(["GET"])
 def admin_click_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
-    return render(request, 'library/adminclick.html')
+    return render(request, 'library/admin/admin_click.html')
+
 
 @csrf_protect
 @require_http_methods(["GET", "POST"])
 def student_signup_view(request):
     first_form = forms.StudentUserForm(request.POST or None)
     second_form = forms.StudentExtraForm(request.POST or None)
+
     if request.method == 'POST' and first_form.is_valid() and second_form.is_valid():
         student_account = first_form.save()
         student_account.set_password(student_account.password)
@@ -55,20 +63,25 @@ def student_signup_view(request):
         my_student_group.user_set.add(student_account)
 
         return HttpResponseRedirect('studentlogin')
-    return render(request, 'library/studentsignup.html', {'form1': first_form, 'form2': second_form})
+
+    return render(request, 'library/student/student_signup.html', {'form1': first_form, 'form2': second_form})
+
 
 def is_admin(user):
     return user.is_superuser or user.is_staff
 
+
 def is_student(user):
     return user.groups.filter(name='STUDENT').exists()
+
 
 @require_http_methods(["GET"])
 def after_login_view(request):
     if is_admin(request.user):
-        return render(request, 'library/adminafterlogin.html')
+        return render(request, 'library/admin/admin_after_login.html')
     elif is_student(request.user):
-        return render(request, 'library/studentafterlogin.html')
+        return render(request, 'library/student/student_after_login.html')
+
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -78,15 +91,18 @@ def add_book_view(request):
     form = forms.BookForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         form.save()
-        return render(request, 'library/bookadded.html')
-    return render(request, 'library/addbook.html', {'form': form})
+        return render(request, 'library/book/book_added.html')
+
+    return render(request, 'library/book/add_book.html', {'form': form})
+
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 @require_http_methods(["GET"])
 def view_book_view(request):
     books = models.Book.objects.all()
-    return render(request, 'library/viewbook.html', {'books': books})
+    return render(request, 'library/book/view_book.html', {'books': books})
+
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -99,8 +115,10 @@ def issue_book_view(request):
             enrollment=request.POST.get('enrollment2'),
             isbn=request.POST.get('isbn2')
         )
-        return render(request, 'library/bookissued.html')
-    return render(request, 'library/issuebook.html', {'form': form})
+        return render(request, 'library/book/book_issued.html')
+
+    return render(request, 'library/book/issue_book.html', {'form': form})
+
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -132,14 +150,16 @@ def view_issued_book_view(request):
                 issued_book.status
             ))
 
-    return render(request, 'library/viewissuedbook.html', {'li': issued_books_list})
+    return render(request, 'library/book/view_issued_book.html', {'li': issued_books_list})
+
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 @require_http_methods(["GET"])
 def view_student_view(request):
     students = models.StudentExtra.objects.all()
-    return render(request, 'library/viewstudent.html', {'students': students})
+    return render(request, 'library/student/view_student.html', {'students': students})
+
 
 @login_required(login_url='studentlogin')
 @require_http_methods(["GET"])
@@ -147,7 +167,7 @@ def view_issued_book_by_student(request):
     student = models.StudentExtra.objects.filter(user=request.user).first()
 
     if not student:
-        return render(request, 'library/viewissuedbookbystudent.html', {'combined_data': []})
+        return render(request, 'library/book/view_issued_book_by_student.html', {'combined_data': []})
 
     issued_books = models.IssuedBook.objects.filter(
         enrollment=student.enrollment)
@@ -176,7 +196,8 @@ def view_issued_book_by_student(request):
                 issued_book.id
             ))
 
-    return render(request, 'library/viewissuedbookbystudent.html', {'combined_data': combined_data})
+    return render(request, 'library/book/view_issued_book_by_student.html', {'combined_data': combined_data})
+
 
 @login_required(login_url='studentlogin')
 @csrf_protect
@@ -187,9 +208,11 @@ def return_book(request, id):
     issued_book.save()
     return redirect('viewissuedbookbystudent')
 
+
 @require_http_methods(["GET"])
-def aboutus_view(request):
-    return render(request, 'library/aboutus.html')
+def about_us_view(request):
+    return render(request, 'library/about_us/index.html')
+
 
 @csrf_protect
 @require_http_methods(["GET", "POST"])
@@ -201,8 +224,8 @@ def contactus_view(request):
 
         if submit.is_valid():
             email = submit.cleaned_data['Email']
-            name = submit.cleaned_data['Name']
-            message = submit.cleaned_data['Message']
+            name = submit.cleaned_data['Nome']
+            message = submit.cleaned_data['Mensagem']
 
             subject = f"{name} || {email}"
             recipient_list = [
@@ -216,13 +239,13 @@ def contactus_view(request):
                     recipient_list,
                     fail_silently=False,
                 )
-                return render(request, 'library/contactussuccess.html')
+                return render(request, 'library/contact/success.html')
 
             except Exception as exception:
                 logger.error(f"Erro ao enviar e-mail: {exception}")
-                return render(request, 'library/contactus.html', {
+                return render(request, 'library/contact/index.html', {
                     'form': submit,
                     'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.'
                 })
 
-    return render(request, 'library/contactus.html', {'form': submit})
+    return render(request, 'library/contact/index.html', {'form': submit})

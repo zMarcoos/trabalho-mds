@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contate-nos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+
+  {% include "library/navbar.html" %}
+
+  <div class="container mx-auto text-center mt-24 px-6 flex-grow">
+    <h1 class="text-5xl font-extrabold text-gray-900">Contate-nos</h1>
+    <p class="text-lg mt-4 max-w-3xl mx-auto text-gray-700">
+      Adoraríamos ouvir de você! Se você tiver dúvidas, comentários ou sugestões, sinta-se à vontade para entrar em contato.
+    </p>
+  </div>
+
+  <div class="flex flex-col items-center text-center mt-10 px-6 flex-grow mb-6">
+    <form method="POST" class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+      {% csrf_token %}
+      <div class="space-y-4">
+        {% for field in form %}
+          <div class="text-left">
+            <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition text-lg">Enviar Mensagem</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("input, textarea, select").forEach(element => {
+        element.classList.add("w-full", "px-4", "py-2", "border", "border-gray-300", "rounded-lg", "focus:outline-none", "focus:ring-2", "focus:ring-blue-500");
+      });
+    });
+  </script>
+
+  {% include "library/footer.html" %}
+
+</body>
+</html>

@@ -29,9 +29,9 @@ urlpatterns = [
 
     path('studentsignup', views.student_signup_view),
     path('adminlogin', LoginView.as_view(
-        template_name='library/adminlogin.html')),
+        template_name='library/admin/admin_login.html')),
     path('studentlogin', LoginView.as_view(
-        template_name='library/studentlogin.html')),
+        template_name='library/student/student_login.html')),
     path('returnbook/<int:id>/', views.return_book, name='returnbook'),
 
     path('logout', views.custom_logout_view, name='logout'),
@@ -45,7 +45,7 @@ urlpatterns = [
     path('viewissuedbookbystudent', views.view_issued_book_by_student,
          name='viewissuedbookbystudent'),
 
-    path('aboutus', views.aboutus_view),
+    path('aboutus', views.about_us_view),
     path('contactus', views.contactus_view),
 
 ]

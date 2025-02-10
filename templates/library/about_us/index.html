@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sobre nós</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+
+    {% include "library/navbar.html" %}
+
+    <div class="container mx-auto text-center mt-24 px-6 flex-grow">
+        <h1 class="text-5xl font-extrabold text-gray-900">Sobre nós</h1>
+        <p class="text-lg mt-4 max-w-3xl mx-auto text-gray-700">
+            Dedicamo-nos a fornecer os melhores recursos, suporte e orientação para estudantes e administradores. Explore uma vasta coleção de materiais digitais, orientação especializada e um ambiente de aprendizagem interativo.
+        </p>
+    </div>
+
+    <div class="flex flex-col items-center text-center mt-10 px-6 flex-grow">
+        <img src="{% static 'images/library.jpg' %}" alt="Library Image" class="w-full max-w-3xl rounded-lg shadow-lg">
+        <p class="text-lg mt-6 max-w-2xl text-gray-700">
+            Nosso objetivo é tornar o aprendizado acessível e agradável para todos. Junte-se à nossa comunidade e aprimore seu conhecimento com materiais de alta qualidade e orientação profissional.
+        </p>
+        <a href="/" class="mt-6 mb-6 bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 transition text-lg">Explore agora!</a>
+    </div>
+
+    {% include "library/footer.html" %}
+
+</body>
+</html>
