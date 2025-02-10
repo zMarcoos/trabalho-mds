@@ -4,137 +4,87 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Books Issued To You</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        .table-custom {
-            border: 2px solid #A40808;
-            background-color: #EEE7DB;
-            text-align: center;
-        }
-
-        .table-custom th {
-            background: #A40808;
-            color: #FFF;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .table-custom tbody tr:nth-child(even) {
-            background: #F5C8BF;
-        }
-
-        .btn-return {
-            display: inline-block;
-            background-color: #A40808;
-            color: white;
-            padding: 8px 12px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: background 0.3s ease-in-out;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-return:hover {
-            background-color: #820606;
-            color: white;
-        }
-
-        .btn-return.disabled {
-            background-color: gray !important;
-            cursor: not-allowed;
-        }
-    </style>
+    <title>Livros Emprestados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
 
     {% include "library/student/navbar_student.html" %}
 
-    <div class="container mt-5">
-        <h3 class="p-3 mb-2 bg-primary text-white text-center">Books Issued To You</h3>
+    <div class="container mx-auto text-center mt-24 mb-6 px-6 flex-grow">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-6xl mx-auto">
+            <h1 class="text-4xl font-extrabold text-gray-900">Livros emprestados</h1>
+            <p class="text-lg mt-4 text-gray-700">Visualize os livros emprestados, prazos e multas pendentes.</p>
+            <hr class="my-6 border-gray-300">
 
-        {% if combined_data %}
-        <div class="table-responsive">
-            <table class="table table-bordered table-custom">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Enrollment</th>
-                        <th>Branch</th>
-                        <th>Book Name</th>
-                        <th>Book Author</th>
-                        <th>Issue Date</th>
-                        <th>Expiry Date</th>
-                        <th>Fine</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student_name, enrollment, branch, book_name, author, issue_date, expiry_date, fine, status, book_id in combined_data %}
-                    <tr>
-                        <td>{{ student_name }}</td>
-                        <td>{{ enrollment }}</td>
-                        <td>{{ branch }}</td>
-                        <td>{{ book_name }}</td>
-                        <td>{{ author }}</td>
-                        <td>{{ issue_date }}</td>
-                        <td>{{ expiry_date }}</td>
-                        <td>
-                            {% if status == "Returned" %}
-                                No Fine
-                            {% else %}
-                                {{ fine }}
-                            {% endif %}
-                        </td>
-                        <td id="status-{{ book_id }}">{{ status }}</td>
-                        <td>
-                            {% if status == "Issued" %}
-                                <button data-book-id="{{ book_id }}" class="btn-return" onclick="returnBook(this)">
-                                    Return
+            {% if combined_data %}
+            <div class="overflow-x-auto">
+                <table class="w-full border border-gray-300 text-center table-auto">
+                    <thead class="bg-gray-900 text-white">
+                        <tr>
+                            <th class="py-2 px-4">Nome</th>
+                            <th class="py-2 px-4">Matrícula</th>
+                            <th class="py-2 px-4">Curso</th>
+                            <th class="py-2 px-4">Livro</th>
+                            <th class="py-2 px-4">Autor</th>
+                            <th class="py-2 px-4">Data de Empréstimo</th>
+                            <th class="py-2 px-4">Data de Expiração</th>
+                            <th class="py-2 px-4">Multa</th>
+                            <th class="py-2 px-4">Status</th>
+                            <th class="py-2 px-4">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student_name, enrollment, branch, book_name, author, issue_date, expiry_date, fine, status, book_id in combined_data %}
+                        <tr class="border-t border-gray-300">
+                            <td class="py-2 px-4">{{ student_name }}</td>
+                            <td class="py-2 px-4">{{ enrollment }}</td>
+                            <td class="py-2 px-4">{{ branch }}</td>
+                            <td class="py-2 px-4">{{ book_name }}</td>
+                            <td class="py-2 px-4">{{ author }}</td>
+                            <td class="py-2 px-4">{{ issue_date }}</td>
+                            <td class="py-2 px-4">{{ expiry_date }}</td>
+                            <td class="py-2 px-4">{% if status == "Returned" %}Sem Multa{% else %}{{ fine }}{% endif %}</td>
+                            <td class="py-2 px-4 font-bold" id="status-{{ book_id }}">{% if status == "Returned" %}Retornado{% else %}Emprestado{% endif %}</td>
+                            <td class="py-2 px-4">
+                                {% if status == "Issued" %}
+                                <button data-book-id="{{ book_id }}" class="bg-red-600 text-white py-1 px-3 rounded-lg hover:bg-red-700 transition" onclick="returnBook(this)">
+                                    Devolver
                                 </button>
-                            {% else %}
-                                <button class="btn-return disabled" disabled>
-                                    Returned
+                                {% else %}
+                                <button class="bg-gray-400 text-white py-1 px-3 rounded-lg cursor-not-allowed" disabled>
+                                    Devolvido
                                 </button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <h2 class="text-center mt-4 text-lg text-gray-700">Nenhum livro emprestado para você.</h2>
+            {% endif %}
         </div>
-        {% else %}
-        <h1 class="text-center mt-4">No books issued to you.</h1>
-        {% endif %}
     </div>
 
     {% include "library/footer.html" %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-YQ5m1NyEalHOt3gOdybQqVfD2w4+K8e1l5P3Wg7x3I5R6BmnG5FgkG8cxPFSJyo4"
-          crossorigin="anonymous"></script>
     <script>
         function returnBook(button) {
             const bookId = button.getAttribute("data-book-id");
-            document.getElementById(`status-${bookId}`).innerText = "Returned";
+            document.getElementById(`status-${bookId}`).innerText = "Devolvido";
 
-            button.innerText = "Returned";
-            button.classList.add("disabled");
+            button.innerText = "Devolvido";
+            button.classList.add("bg-gray-400", "cursor-not-allowed");
             button.setAttribute("disabled", "true");
 
             fetch(`/returnbook/${bookId}/`)
                 .then(response => {
-                    if (response.ok) return;
-
-                    alert("Erro ao devolver o livro. Tente novamente.");
-                    location.reload();
+                    if (!response.ok) {
+                        alert("Erro ao devolver o livro. Tente novamente.");
+                        location.reload();
+                    }
                 })
                 .catch(() => {
                     alert("Erro ao conectar ao servidor.");

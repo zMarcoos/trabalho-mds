@@ -4,103 +4,61 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Issued Books to Students</title>
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <style>
-    .table-custom {
-      border: 2px solid #A40808;
-      background-color: #EEE7DB;
-      text-align: center;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .table-custom th {
-      background: #A40808;
-      color: #FFF;
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .table-custom tbody tr:nth-child(even) {
-      background: #F5C8BF;
-    }
-
-    .status-issued {
-      color: white;
-      background-color: #007BFF;
-      padding: 4px 10px;
-      border-radius: 5px;
-    }
-
-    .status-returned {
-      color: white;
-      background-color: #28A745;
-      padding: 4px 10px;
-      border-radius: 5px;
-    }
-  </style>
+  <title>Livros Emprestados para estudantes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
 
   {% include "library/admin/navbar_admin.html" %}
 
-  <div class="container mt-5">
-    <h3 class="p-3 mb-2 bg-primary text-white text-center">Issued Books to Students</h3>
+  <div class="container mx-auto text-center mt-24 mb-6 px-6 flex-grow">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-6xl mx-auto">
+      <h1 class="text-4xl font-extrabold text-gray-900">Livros emprestados para estudantes</h1>
+      <p class="text-lg mt-4 text-gray-700">Visualize os livros emprestados aos estudantes, prazos e multas pendentes.</p>
+      <hr class="my-6 border-gray-300">
 
-    {% if li %}
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped table-hover table-custom">
-        <thead>
-          <tr>
-            <th>Student Name</th>
-            <th>Enrollment</th>
-            <th>Book Name</th>
-            <th>Book Author</th>
-            <th>Issue Date</th>
-            <th>Expiry Date</th>
-            <th>Fine</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for student_name, enrollment, book_name, author, issue_date, expiry_date, fine, status in li %}
-          <tr>
-            <td>{{ student_name }}</td>
-            <td>{{ enrollment }}</td>
-            <td>{{ book_name }}</td>
-            <td>{{ author }}</td>
-            <td>{{ issue_date }}</td>
-            <td>{{ expiry_date }}</td>
-            <td>
-              {% if status == "Returned" %}
-                <span class="text-success fw-bold">No Fine</span>
-              {% else %}
-                {{ fine }}
-              {% endif %}
-            </td>
-            <td>
-              <span class="{% if status == 'Issued' %}status-issued{% else %}status-returned{% endif %}">
-                {{ status }}
-              </span>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% if li %}
+      <div class="overflow-x-auto">
+        <table class="w-full border border-gray-300 text-center table-auto">
+          <thead class="bg-gray-900 text-white">
+            <tr>
+              <th class="py-2 px-4">Nome do Estudante</th>
+              <th class="py-2 px-4">Matrícula</th>
+              <th class="py-2 px-4">Livro</th>
+              <th class="py-2 px-4">Autor</th>
+              <th class="py-2 px-4">Data de Empréstimo</th>
+              <th class="py-2 px-4">Data de Expiração</th>
+              <th class="py-2 px-4">Multa</th>
+              <th class="py-2 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student_name, enrollment, book_name, author, issue_date, expiry_date, fine, status in li %}
+            <tr class="border-t border-gray-300">
+              <td class="py-2 px-4">{{ student_name }}</td>
+              <td class="py-2 px-4">{{ enrollment }}</td>
+              <td class="py-2 px-4">{{ book_name }}</td>
+              <td class="py-2 px-4">{{ author }}</td>
+              <td class="py-2 px-4">{{ issue_date }}</td>
+              <td class="py-2 px-4">{{ expiry_date }}</td>
+              <td class="py-2 px-4">{% if status == "Returned" %}<span class="text-green-600 font-bold">Sem Multa</span>{% else %}{{ fine }}{% endif %}</td>
+              <td class="py-2 px-4 font-bold">
+                <span class="{% if status == 'Issued' %}text-blue-600 bg-blue-100 px-2 py-1 rounded-lg{% else %}text-green-600 bg-green-100 px-2 py-1 rounded-lg{% endif %}">
+                  {% if status == "Returned" %}Retornado{% else %}Emprestado{% endif %}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <h2 class="text-center mt-4 text-lg text-gray-700">Nenhum livro emprestado</h2>
+      {% endif %}
     </div>
-    {% else %}
-    <h1 class="text-center mt-4">No books issued</h1>
-    {% endif %}
   </div>
 
   {% include "library/footer.html" %}
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-YQ5m1NyEalHOt3gOdybQqVfD2w4+K8e1l5P3Wg7x3I5R6BmnG5FgkG8cxPFSJyo4"
-          crossorigin="anonymous"></script>
 </body>
 </html>

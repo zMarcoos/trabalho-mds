@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gerenciamento da Biblioteca</title>
+  <title>Gerenciamento da biblioteca</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
@@ -25,24 +25,24 @@
       <div class="flex flex-col md:flex-row md:space-x-4 p-4 md:p-0">
         <div class="relative group">
           <button class="text-white text-sm font-medium px-3 py-2 block">Livros</button>
-          <div class="absolute hidden group-hover:block bg-gray-800 text-white py-2 rounded-lg shadow-lg">
-            <a href="addbook" class="block px-4 py-2 hover:bg-gray-700">Adicionar livro</a>
-            <a href="viewbook" class="block px-4 py-2 hover:bg-gray-700">Visualizar livros</a>
+          <div class="absolute hidden group-hover:flex flex-col bg-gray-800 text-white mt-2 rounded-lg shadow-lg w-48">
+            <a href="addbook" class="px-4 py-2 hover:bg-gray-700 rounded-t-lg">Adicionar livro</a>
+            <a href="viewbook" class="px-4 py-2 hover:bg-gray-700 rounded-b-lg">Visualizar livros</a>
           </div>
         </div>
 
         <div class="relative group">
           <button class="text-white text-sm font-medium px-3 py-2 block">Empréstimos</button>
-          <div class="absolute hidden group-hover:block bg-gray-800 text-white py-2 rounded-lg shadow-lg">
-            <a href="issuebook" class="block px-4 py-2 hover:bg-gray-700">Emitir livro</a>
-            <a href="viewissuedbook" class="block px-4 py-2 hover:bg-gray-700">Livros emprestados</a>
+          <div class="absolute hidden group-hover:flex flex-col bg-gray-800 text-white mt-2 rounded-lg shadow-lg w-48">
+            <a href="issuebook" class="px-4 py-2 hover:bg-gray-700 rounded-t-lg">Emitir livro</a>
+            <a href="viewissuedbook" class="px-4 py-2 hover:bg-gray-700 rounded-b-lg">Livros emprestados</a>
           </div>
         </div>
 
         <div class="relative group">
           <button class="text-white text-sm font-medium px-3 py-2 block">Estudantes</button>
-          <div class="absolute hidden group-hover:block bg-gray-800 text-white py-2 rounded-lg shadow-lg">
-            <a href="viewstudent" class="block px-4 py-2 hover:bg-gray-700">Visualizar estudantes</a>
+          <div class="absolute hidden group-hover:flex flex-col bg-gray-800 text-white mt-2 rounded-lg shadow-lg w-48">
+            <a href="viewstudent" class="px-4 py-2 hover:bg-gray-700 rounded-lg">Visualizar estudantes</a>
           </div>
         </div>
       </div>

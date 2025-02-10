@@ -23,11 +23,16 @@
 
         <div class="md:flex md:items-center md:space-x-4 md:static fixed top-0 right-0 h-screen w-64 bg-gray-900 shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 md:h-auto md:w-auto md:bg-transparent md:shadow-none md:translate-x-0" id="menu">
             <div class="flex flex-col md:flex-row md:space-x-4 p-4 md:p-0">
-                <a href="viewissuedbookbystudent" class="text-white text-sm font-medium px-3 py-2 block hover:bg-gray-700 md:hover:bg-transparent transition">Livros emprestados</a>
+                <div class="relative group">
+                    <button class="text-white text-sm font-medium px-3 py-2 block">Livros</button>
+                    <div class="absolute hidden group-hover:flex flex-col bg-gray-800 text-white mt-2 rounded-lg shadow-lg w-48">
+                        <a href="viewissuedbookbystudent" class="px-4 py-2 hover:bg-gray-700 rounded-lg">Livros emprestados</a>
+                    </div>
+                </div>
             </div>
 
             <div class="md:flex md:items-center md:space-x-4 p-4 md:p-0">
-                <a href="/aboutus" class="text-white text-sm font-medium px-3 py-2 block hover:bg-gray-700 md:hover:bg-transparent transition">Sobre Nós</a>
+                <a href="/aboutus" class="text-white text-sm font-medium px-3 py-2 block hover:bg-gray-700 md:hover:bg-transparent transition">Sobre nós</a>
                 <a href="contactus" class="text-white text-sm font-medium px-3 py-2 block hover:bg-gray-700 md:hover:bg-transparent transition">Contato</a>
                 <a href="{% url 'logout' %}" class="text-white text-sm font-medium px-3 py-2 block hover:bg-gray-700 md:hover:bg-transparent transition">Sair</a>
             </div>
