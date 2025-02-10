@@ -38,7 +38,6 @@ def admin_click_view(request):
     return render(request, 'library/adminclick.html')
 
 @csrf_protect
-@require_http_methods(["GET", "POST"])
 def student_signup_view(request):
     first_form = forms.StudentUserForm(request.POST or None)
     second_form = forms.StudentExtraForm(request.POST or None)
@@ -73,7 +72,6 @@ def after_login_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 @csrf_protect
-@require_http_methods(["GET", "POST"])
 def add_book_view(request):
     form = forms.BookForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
@@ -91,7 +89,6 @@ def view_book_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 @csrf_protect
-@require_http_methods(["GET", "POST"])
 def issue_book_view(request):
     form = forms.IssuedBookForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
@@ -192,7 +189,6 @@ def aboutus_view(request):
     return render(request, 'library/aboutus.html')
 
 @csrf_protect
-@require_http_methods(["GET", "POST"])
 def contactus_view(request):
     submit = forms.ContactusForm()
 
