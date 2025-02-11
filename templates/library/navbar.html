@@ -2,65 +2,100 @@
 {% load static %}
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gerenciamento da Biblioteca</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gerenciamento da biblioteca</title>
 
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <style>
+    .submenu {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    }
+
+    .group:hover .submenu,
+    .group:focus-within .submenu {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
-  <nav class="bg-gray-900 fixed top-0 w-full z-10 shadow-lg">
-    <div class="container mx-auto flex justify-between items-center py-3 px-4">
-      <a href="/" class="text-white flex items-center">
-        <img src="{% static 'images/books-icon.svg' %}" alt="Logo biblioteca" class="w-10 h-10">
-      </a>
+<nav class="bg-gray-900 fixed top-0 w-full z-10 shadow-lg">
+  <div class="container mx-auto flex justify-between items-center py-3 px-4">
+    <a href="/" class="text-white flex items-center">
+      <img src="{% static 'images/books-icon.svg' %}" alt="Logo biblioteca" class="w-10 h-10">
+    </a>
 
-      <button class="text-white md:hidden focus:outline-none" id="menu-toggle">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
+    <button class="text-white md:hidden focus:outline-none cursor-pointer" id="menu-toggle">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
 
-      <div class="md:flex md:items-center md:space-x-4 md:static fixed top-0 right-0 h-screen w-64 bg-gray-900 shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 md:h-auto md:w-auto md:bg-transparent md:shadow-none md:translate-x-0" id="menu">
-        <div class="flex flex-col md:flex-row md:space-x-4 p-4 md:p-0">
-          {% for item in nav_items %}
-            {% if item.submenu %}
-              <div class="relative group">
-                <button class="text-white text-sm font-medium px-3 py-2 block">{{ item.name }}</button>
-                <div class="absolute hidden group-hover:flex flex-col bg-gray-800 text-white mt-2 rounded-lg shadow-lg w-48">
-                  {% for sub in item.submenu %}
-                    <a href="{{ sub.url }}" class="px-4 py-2 hover:bg-gray-700 rounded-lg">{{ sub.name }}</a>
-                  {% endfor %}
-                </div>
+    <div class="md:flex md:items-center md:space-x-4 md:static fixed top-0 right-0 h-screen w-64 bg-gray-900 shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 md:h-auto md:w-auto md:bg-transparent md:shadow-none md:translate-x-0" id="menu">
+
+      <button class="text-white text-2xl self-end md:hidden focus:outline-none p-4 cursor-pointer" id="menu-close">×</button>
+
+      <div class="flex flex-col md:flex-row md:space-x-4 p-4 md:p-0">
+        {% for item in nav_items %}
+          {% if item.submenu %}
+            <div class="relative group">
+              <button class="text-white text-sm font-medium px-3 py-2 block cursor-pointer">{{ item.name }}</button>
+
+              <div class="submenu bg-gray-800 text-white rounded-lg shadow-lg w-48 min-w-max absolute md:left-0 md:top-full md:flex-col md:flex hidden group-hover:flex group-focus-within:flex
+                          left-auto right-full top-0 flex flex-col">
+                {% for sub in item.submenu %}
+                  <a href="{{ sub.url }}" class="px-4 py-2 hover:bg-gray-700 rounded-lg cursor-pointer block whitespace-nowrap">{{ sub.name }}</a>
+                {% endfor %}
               </div>
-            {% else %}
-              <a href="{{ item.url }}" class="text-white text-sm font-medium px-3 py-2 block hover:bg-gray-700 md:hover:bg-transparent transition">{{ item.name }}</a>
-            {% endif %}
-          {% endfor %}
-        </div>
+
+            </div>
+          {% else %}
+            <a href="{{ item.url }}" class="text-white text-sm font-medium px-3 py-2 block hover:bg-gray-700 md:hover:bg-transparent transition cursor-pointer">{{ item.name }}</a>
+          {% endif %}
+        {% endfor %}
       </div>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const menuToggle = document.getElementById("menu-toggle");
-      const menu = document.getElementById("menu");
-      const closeMenu = document.getElementById("close-menu");
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.getElementById("menu-toggle");
+    const menu = document.getElementById("menu");
+    const menuClose = document.getElementById("menu-close");
 
-      menuToggle.addEventListener("click", function () {
-        menu.classList.toggle("translate-x-full");
-      });
-
-      closeMenu.addEventListener("click", function () {
-        menu.classList.add("translate-x-full");
-      });
-
-      window.addEventListener("resize", function () {
-        if (window.innerWidth >= 768) menu.classList.add("translate-x-full");
-      });
+    menuToggle.addEventListener("click", function () {
+      menu.classList.remove("translate-x-full");
     });
-  </script>
+
+    menuClose.addEventListener("click", function () {
+      menu.classList.add("translate-x-full");
+    });
+
+    window.addEventListener("resize", function () {
+      if (window.innerWidth >= 768) menu.classList.add("translate-x-full");
+    });
+
+    document.querySelectorAll(".group").forEach((menuItem) => {
+      let submenu = menuItem.querySelector(".submenu");
+
+      if (submenu) {
+        menuItem.addEventListener("mouseenter", () => {
+          submenu.classList.remove("hidden");
+        });
+
+        menuItem.addEventListener("mouseleave", () => {
+          setTimeout(() => {
+            if (!submenu.matches(":hover")) submenu.classList.add("hidden");
+          }, 200);
+        });
+      }
+    });
+  });
+</script>
 </body>
 </html>
