@@ -191,10 +191,7 @@ def view_book_view(request):
 @user_passes_test(is_admin)
 @require_http_methods(["GET"])
 def issue_book_page(request):
-    return render(request, 'library/book/issue_book.html', {
-        "form": forms.IssuedBookForm(),
-        "nav_items": ADMINISTRATOR_NAV_ITEMS
-    })
+    return render_form_page(request, 'library/book/issue_book.html', forms.IssuedBookForm(), ADMINISTRATOR_NAV_ITEMS)
 
 
 @login_required(login_url='adminlogin')
@@ -209,21 +206,21 @@ def issue_book_action(request):
         enrollment = form.cleaned_data.get('enrollment2')
 
         if not models.Book.objects.filter(isbn=isbn).exists():
-            return render_issue_page(request, form, 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.')
+            return render_form_page(request, 'library/book/issue_book.html', form, ADMINISTRATOR_NAV_ITEMS, 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.')
 
         models.IssuedBook.objects.create(enrollment=enrollment, isbn=isbn)
         return render(request, 'library/book/book_issued.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
 
-    return render_issue_page(request, form)
+    return render_form_page(request, 'library/book/issue_book.html', form, ADMINISTRATOR_NAV_ITEMS)
 
 
-def render_issue_page(request, form, error_message=None):
-    context = {"form": form, "nav_items": ADMINISTRATOR_NAV_ITEMS}
+def render_form_page(request, template, form, nav_items, error_message=None):
+    context = {"form": form, "nav_items": nav_items}
 
     if error_message:
         context["error_message"] = error_message
 
-    return render(request, 'library/book/issue_book.html', context)
+    return render(request, template, context)
 
 
 @login_required(login_url='adminlogin')
@@ -323,10 +320,7 @@ def about_us_view(request):
 @csrf_protect
 @require_http_methods(["GET"])
 def contactus_page(request):
-    return render(request, 'library/contact/index.html', {
-        'form': forms.ContactusForm(),
-        'nav_items': AUTH_NAV_ITEMS
-    })
+    return render_form_page(request, 'library/contact/index.html', forms.ContactusForm(), AUTH_NAV_ITEMS)
 
 
 @csrf_protect
@@ -354,13 +348,6 @@ def contactus_action(request):
 
         except Exception as exception:
             logger.error(f"Erro ao enviar e-mail: {exception}")
-            return render(request, 'library/contact/index.html', {
-                'form': submit,
-                'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.',
-                'nav_items': AUTH_NAV_ITEMS
-            })
+            return render_form_page(request, 'library/contact/index.html', submit, AUTH_NAV_ITEMS, 'Erro ao enviar e-mail. Tente novamente mais tarde.')
 
-    return render(request, 'library/contact/index.html', {
-        'form': submit,
-        'nav_items': AUTH_NAV_ITEMS
-    })
+    return render_form_page(request, 'library/contact/index.html', submit, AUTH_NAV_ITEMS)
