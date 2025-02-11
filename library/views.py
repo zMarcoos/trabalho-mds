@@ -173,25 +173,27 @@ def view_book_view(request):
 def issue_book_view(request):
     form = forms.IssuedBookForm(request.POST or None)
 
-    if request.method == 'POST':
-        if form.is_valid():
-            isbn = request.POST.get('isbn2')
-            enrollment = request.POST.get('enrollment2')
+    if request.method == 'POST' and form.is_valid():
+        isbn = form.cleaned_data.get('isbn2')
+        enrollment = form.cleaned_data.get('enrollment2')
 
-            book = models.Book.objects.filter(isbn=isbn).first()
-            if not book:
-                return render(request, 'library/book/issue_book.html', {'form': form, 'error_message': 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.', "nav_items": ADMINISTRATOR_NAV_ITEMS})
+        book_exists = models.Book.objects.filter(isbn=isbn).exists()
+        if not book_exists:
+            return render_issue_page(request, form, 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.')
 
-            models.IssuedBook.objects.create(
-                enrollment=enrollment,
-                isbn=isbn
-            )
+        models.IssuedBook.objects.create(enrollment=enrollment, isbn=isbn)
+        return render(request, 'library/book/book_issued.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
 
-            return render(request, 'library/book/book_issued.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
-        else:
-            return render(request, 'library/book/issue_book.html', {'form': form, 'error_message': 'Formulário inválido.', "nav_items": ADMINISTRATOR_NAV_ITEMS})
+    return render_issue_page(request, form)
 
-    return render(request, 'library/book/issue_book.html', {'form': form, "nav_items": ADMINISTRATOR_NAV_ITEMS})
+
+def render_issue_page(request, form, error_message=None):
+    context = {"form": form, "nav_items": ADMINISTRATOR_NAV_ITEMS}
+    
+    if error_message:
+        context["error_message"] = error_message
+
+    return render(request, 'library/book/issue_book.html', context)
 
 
 @login_required(login_url='adminlogin')
