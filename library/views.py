@@ -56,7 +56,7 @@ class AdminLoginView(LoginView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['nav_items'] = COMMON_NAV_ITEMS
+        context['nav_items'] = AUTH_NAV_ITEMS
 
         return context
 
@@ -66,7 +66,7 @@ class StudentLoginView(LoginView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['nav_items'] = COMMON_NAV_ITEMS
+        context['nav_items'] = AUTH_NAV_ITEMS
 
         return context
 
@@ -82,7 +82,7 @@ def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
 
-    return render(request, 'library/index.html', {"nav_items": COMMON_NAV_ITEMS})
+    return render(request, 'library/index.html', {"nav_items": AUTH_NAV_ITEMS})
 
 
 @require_http_methods(["GET"])
@@ -90,7 +90,7 @@ def student_click_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
 
-    return render(request, 'library/student/student_click.html', {"nav_items": COMMON_NAV_ITEMS})
+    return render(request, 'library/student/student_click.html', {"nav_items": AUTH_NAV_ITEMS})
 
 
 @require_http_methods(["GET"])
@@ -98,11 +98,11 @@ def admin_click_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
 
-    return render(request, 'library/admin/admin_click.html', {"nav_items": COMMON_NAV_ITEMS})
+    return render(request, 'library/admin/admin_click.html', {"nav_items": AUTH_NAV_ITEMS})
 
 
 @csrf_protect
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["POST"])
 def student_signup_view(request):
     first_form = forms.StudentUserForm(request.POST or None)
     second_form = forms.StudentExtraForm(request.POST or None)
@@ -121,7 +121,7 @@ def student_signup_view(request):
 
         return HttpResponseRedirect('studentlogin')
 
-    return render(request, 'library/student/student_signup.html', {'form1': first_form, 'form2': second_form, "nav_items": COMMON_NAV_ITEMS})
+    return render(request, 'library/student/student_signup.html', {'form1': first_form, 'form2': second_form, "nav_items": AUTH_NAV_ITEMS})
 
 
 def is_admin(user):
@@ -189,7 +189,7 @@ def issue_book_view(request):
 
 def render_issue_page(request, form, error_message=None):
     context = {"form": form, "nav_items": ADMINISTRATOR_NAV_ITEMS}
-    
+
     if error_message:
         context["error_message"] = error_message
 
@@ -287,7 +287,7 @@ def return_book(request, id):
 
 @require_http_methods(["GET"])
 def about_us_view(request):
-    return render(request, 'library/about_us/index.html', {"nav_items": COMMON_NAV_ITEMS})
+    return render(request, 'library/about_us/index.html', {"nav_items": AUTH_NAV_ITEMS})
 
 
 @csrf_protect
@@ -315,7 +315,7 @@ def contactus_view(request):
                     recipient_list,
                     fail_silently=False,
                 )
-                return render(request, 'library/contact/success.html', {'nav_items': COMMON_NAV_ITEMS})
+                return render(request, 'library/contact/success.html', {'nav_items': AUTH_NAV_ITEMS})
 
             except Exception as exception:
                 logger.error(f"Erro ao enviar e-mail: {exception}")
@@ -324,4 +324,4 @@ def contactus_view(request):
                     'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.'
                 })
 
-    return render(request, 'library/contact/index.html', {'form': submit, 'nav_items': COMMON_NAV_ITEMS})
+    return render(request, 'library/contact/index.html', {'form': submit, 'nav_items': AUTH_NAV_ITEMS})
