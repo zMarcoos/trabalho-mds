@@ -27,7 +27,8 @@ urlpatterns = [
     path('adminclick', views.admin_click_view),
     path('studentclick', views.student_click_view),
 
-    path('studentsignup', views.student_signup_view),
+    path('studentsignup', views.student_signup_page, name="studentsignup"),
+    path('studentsignup/action', views.student_signup_action, name="studentsignup_action"),
     path('adminlogin', AdminLoginView.as_view(), name='adminlogin'),
     path('studentlogin', StudentLoginView.as_view(), name='studentlogin'),
     path('returnbook/<int:id>/', views.return_book, name='returnbook'),
@@ -35,15 +36,16 @@ urlpatterns = [
     path('logout', views.custom_logout_view, name='logout'),
     path('afterlogin', views.after_login_view),
 
-    path('addbook', views.add_book_view),
+    path('addbook', views.add_book_page),
+    path('addbook/action', views.add_book_action, name='addbook_action'),
     path('viewbook', views.view_book_view),
-    path('issuebook', views.issue_book_view),
+    path('issuebook', views.issue_book_page, name='issuebook'),
+    path('issuebook/action', views.issue_book_action, name='issuebook_action'),
     path('viewissuedbook', views.view_issued_book_view),
     path('viewstudent', views.view_student_view),
-    path('viewissuedbookbystudent', views.view_issued_book_by_student,
-         name='viewissuedbookbystudent'),
+    path('viewissuedbookbystudent', views.view_issued_book_by_student, name='viewissuedbookbystudent'),
 
     path('aboutus', views.about_us_view),
-    path('contactus', views.contactus_view),
-
+    path('contactus', views.contactus_page, name='contactus'),
+    path('contactus/action', views.contactus_action, name='contactus_action'),
 ]

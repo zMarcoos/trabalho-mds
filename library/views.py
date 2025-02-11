@@ -102,13 +102,23 @@ def admin_click_view(request):
 
 
 @csrf_protect
-@require_http_methods(["POST"])
-def student_signup_view(request):
-    first_form = forms.StudentUserForm(request.POST or None)
-    second_form = forms.StudentExtraForm(request.POST or None)
+@require_http_methods(["GET"])
+def student_signup_page(request):
+    return render(request, 'library/student/student_signup.html', {
+        'form1': forms.StudentUserForm(),
+        'form2': forms.StudentExtraForm(),
+        "nav_items": AUTH_NAV_ITEMS
+    })
 
-    if request.method == 'POST' and first_form.is_valid() and second_form.is_valid():
-        student_account = first_form.save()
+
+@csrf_protect
+@require_http_methods(["POST"])
+def student_signup_action(request):
+    first_form = forms.StudentUserForm(request.POST)
+    second_form = forms.StudentExtraForm(request.POST)
+
+    if first_form.is_valid() and second_form.is_valid():
+        student_account = first_form.save(commit=False)
         student_account.set_password(student_account.password)
         student_account.save()
 
@@ -116,12 +126,15 @@ def student_signup_view(request):
         student_extra_data.user = student_account
         student_extra_data.save()
 
-        my_student_group, _ = Group.objects.get_or_create(name='STUDENT')
-        my_student_group.user_set.add(student_account)
+        Group.objects.get_or_create(name='STUDENT')[0].user_set.add(student_account)
 
-        return HttpResponseRedirect('studentlogin')
+        return redirect('studentlogin')
 
-    return render(request, 'library/student/student_signup.html', {'form1': first_form, 'form2': second_form, "nav_items": AUTH_NAV_ITEMS})
+    return render(request, 'library/student/student_signup.html', {
+        "form1": first_form,
+        "form2": second_form,
+        "nav_items": AUTH_NAV_ITEMS,
+    })
 
 
 def is_admin(user):
@@ -142,20 +155,28 @@ def after_login_view(request):
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
-@csrf_protect
-@require_http_methods(["GET", "POST"])
-def add_book_view(request):
-    form = forms.BookForm(request.POST or None)
-
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            return render(request, 'library/book/book_added.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
-        else:
-            return render(request, 'library/book/add_book.html', {'form': form, 'error_message': 'Formulário inválido.', "nav_items": ADMINISTRATOR_NAV_ITEMS})
-
-
+@require_http_methods(["GET"])
+def add_book_page(request):
+    form = forms.BookForm()
     return render(request, 'library/book/add_book.html', {'form': form, "nav_items": ADMINISTRATOR_NAV_ITEMS})
+
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+@csrf_protect
+@require_http_methods(["POST"])
+def add_book_action(request):
+    form = forms.BookForm(request.POST)
+
+    if form.is_valid():
+        form.save()
+        return render(request, 'library/book/book_added.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
+
+    return render(request, 'library/book/add_book.html', {
+        'form': form,
+        'error_message': 'Formulário inválido.',
+        "nav_items": ADMINISTRATOR_NAV_ITEMS
+    })
 
 
 @login_required(login_url='adminlogin')
@@ -168,32 +189,39 @@ def view_book_view(request):
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
-@csrf_protect
-@require_http_methods(["GET", "POST"])
-def issue_book_view(request):
-    form = forms.IssuedBookForm(request.POST or None)
+@require_http_methods(["GET"])
+def issue_book_page(request):
+    return render(request, 'library/book/issue_book.html', {
+        "form": forms.IssuedBookForm(),
+        "nav_items": ADMINISTRATOR_NAV_ITEMS
+    })
 
-    if request.method == 'POST' and form.is_valid():
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+@csrf_protect
+@require_http_methods(["POST"])
+def issue_book_action(request):
+    form = forms.IssuedBookForm(request.POST)
+
+    if form.is_valid():
         isbn = form.cleaned_data.get('isbn2')
         enrollment = form.cleaned_data.get('enrollment2')
 
-        book_exists = models.Book.objects.filter(isbn=isbn).exists()
-        if not book_exists:
-            return render_issue_page(request, form, 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.')
+        if not models.Book.objects.filter(isbn=isbn).exists():
+            return render(request, 'library/book/issue_book.html', {
+                'form': form,
+                'error_message': 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.',
+                "nav_items": ADMINISTRATOR_NAV_ITEMS
+            })
 
         models.IssuedBook.objects.create(enrollment=enrollment, isbn=isbn)
         return render(request, 'library/book/book_issued.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
 
-    return render_issue_page(request, form)
-
-
-def render_issue_page(request, form, error_message=None):
-    context = {"form": form, "nav_items": ADMINISTRATOR_NAV_ITEMS}
-
-    if error_message:
-        context["error_message"] = error_message
-
-    return render(request, 'library/book/issue_book.html', context)
+    return render(request, 'library/book/issue_book.html', {
+        'form': form,
+        "nav_items": ADMINISTRATOR_NAV_ITEMS
+    })
 
 
 @login_required(login_url='adminlogin')
@@ -291,37 +319,46 @@ def about_us_view(request):
 
 
 @csrf_protect
-@require_http_methods(["GET", "POST"])
-def contactus_view(request):
-    submit = forms.ContactusForm()
+@require_http_methods(["GET"])
+def contactus_page(request):
+    return render(request, 'library/contact/index.html', {
+        'form': forms.ContactusForm(),
+        'nav_items': AUTH_NAV_ITEMS
+    })
 
-    if request.method == 'POST':
-        submit = forms.ContactusForm(request.POST)
 
-        if submit.is_valid():
-            email = submit.cleaned_data['Email']
-            name = submit.cleaned_data['Nome']
-            message = submit.cleaned_data['Mensagem']
+@csrf_protect
+@require_http_methods(["POST"])
+def contactus_action(request):
+    submit = forms.ContactusForm(request.POST)
 
-            subject = f"{name} || {email}"
-            recipient_list = [
-                os.getenv('RECIPIENT_EMAIL', 'zmarcoos12@gmail.com')]
+    if submit.is_valid():
+        email = submit.cleaned_data['Email']
+        name = submit.cleaned_data['Nome']
+        message = submit.cleaned_data['Mensagem']
 
-            try:
-                send_mail(
-                    subject,
-                    message,
-                    EMAIL_HOST_USER,
-                    recipient_list,
-                    fail_silently=False,
-                )
-                return render(request, 'library/contact/success.html', {'nav_items': AUTH_NAV_ITEMS})
+        subject = f"{name} || {email}"
+        recipient_list = [os.getenv('RECIPIENT_EMAIL', 'zmarcoos12@gmail.com')]
 
-            except Exception as exception:
-                logger.error(f"Erro ao enviar e-mail: {exception}")
-                return render(request, 'library/contact/index.html', {
-                    'form': submit,
-                    'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.'
-                })
+        try:
+            send_mail(
+                subject,
+                message,
+                EMAIL_HOST_USER,
+                recipient_list,
+                fail_silently=False,
+            )
+            return render(request, 'library/contact/success.html', {'nav_items': AUTH_NAV_ITEMS})
 
-    return render(request, 'library/contact/index.html', {'form': submit, 'nav_items': AUTH_NAV_ITEMS})
+        except Exception as exception:
+            logger.error(f"Erro ao enviar e-mail: {exception}")
+            return render(request, 'library/contact/index.html', {
+                'form': submit,
+                'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.',
+                'nav_items': AUTH_NAV_ITEMS
+            })
+
+    return render(request, 'library/contact/index.html', {
+        'form': submit,
+        'nav_items': AUTH_NAV_ITEMS
+    })

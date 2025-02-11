@@ -19,7 +19,7 @@
   </div>
 
   <div class="flex flex-col items-center text-center mt-10 px-6 flex-grow mb-6">
-    <form method="POST" class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+    <form method="POST" action="{% url 'contactus_action' %}" class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
       {% csrf_token %}
       <div class="space-y-4">
         {% for field in form %}
