@@ -11,9 +11,62 @@ from librarymanagement.settings import EMAIL_HOST_USER
 from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.views import LoginView
 
 logger = logging.getLogger(__name__)
 
+class AdminLoginView(LoginView):
+    template_name = 'library/admin/admin_login.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['nav_items'] = COMMON_NAV_ITEMS
+
+        return context
+
+
+class StudentLoginView(LoginView):
+    template_name = 'library/student/student_login.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['nav_items'] = COMMON_NAV_ITEMS
+
+        return context
+
+
+COMMON_NAV_ITEMS = [
+    {"name": "Administrador", "url": "/adminclick"},
+    {"name": "Estudante", "url": "/studentclick"},
+    {"name": "Sobre nós", "url": "/aboutus"},
+    {"name": "Contate-nos", "url": "/contactus"},
+]
+
+ADMINISTRATOR_NAV_ITEMS = [
+    {"name": "Livros", "submenu": [
+        {"name": "Adicionar livro", "url": "/addbook"},
+        {"name": "Visualizar livros", "url": "/viewbook"}
+    ]},
+    {"name": "Empréstimos", "submenu": [
+        {"name": "Emitir livro", "url": "/issuebook"},
+        {"name": "Livros emprestados", "url": "/viewissuedbook"}
+    ]},
+    {"name": "Estudantes", "submenu": [
+        {"name": "Visualizar estudantes", "url": "/viewstudent"}
+    ]},
+    {"name": "Sobre nós", "url": "/aboutus"},
+    {"name": "Contate-nos", "url": "/contactus"},
+    {"name": "Sair", "url": "/logout"},
+]
+
+STUDENT_NAV_ITEMS = [
+    {"name": "Livros", "submenu": [
+        {"name": "Livros emprestados", "url": "/viewissuedbookbystudent"},
+    ]},
+    {"name": "Sobre nós", "url": "/aboutus"},
+    {"name": "Contate-nos", "url": "/contactus"},
+    {"name": "Sair", "url": "/logout"},
+]
 
 @require_http_methods(["GET"])
 def custom_logout_view(request):
@@ -26,7 +79,7 @@ def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
 
-    return render(request, 'library/index.html')
+    return render(request, 'library/index.html', {"nav_items": COMMON_NAV_ITEMS})
 
 
 @require_http_methods(["GET"])
@@ -34,14 +87,15 @@ def student_click_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
 
-    return render(request, 'library/student/student_click.html')
+    return render(request, 'library/student/student_click.html', {"nav_items": COMMON_NAV_ITEMS})
 
 
 @require_http_methods(["GET"])
 def admin_click_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
-    return render(request, 'library/admin/admin_click.html')
+
+    return render(request, 'library/admin/admin_click.html', {"nav_items": COMMON_NAV_ITEMS})
 
 
 @csrf_protect
@@ -64,7 +118,7 @@ def student_signup_view(request):
 
         return HttpResponseRedirect('studentlogin')
 
-    return render(request, 'library/student/student_signup.html', {'form1': first_form, 'form2': second_form})
+    return render(request, 'library/student/student_signup.html', {'form1': first_form, 'form2': second_form, "nav_items": COMMON_NAV_ITEMS})
 
 
 def is_admin(user):
@@ -78,9 +132,9 @@ def is_student(user):
 @require_http_methods(["GET"])
 def after_login_view(request):
     if is_admin(request.user):
-        return render(request, 'library/admin/admin_after_login.html')
+        return render(request, 'library/admin/admin_after_login.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
     elif is_student(request.user):
-        return render(request, 'library/student/student_after_login.html')
+        return render(request, 'library/student/student_after_login.html', {"nav_items": STUDENT_NAV_ITEMS})
 
 
 @login_required(login_url='adminlogin')
@@ -89,11 +143,16 @@ def after_login_view(request):
 @require_http_methods(["GET", "POST"])
 def add_book_view(request):
     form = forms.BookForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        return render(request, 'library/book/book_added.html')
 
-    return render(request, 'library/book/add_book.html', {'form': form})
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            return render(request, 'library/book/book_added.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
+        else:
+            return render(request, 'library/book/add_book.html', {'form': form, 'error_message': 'Formulário inválido.', "nav_items": ADMINISTRATOR_NAV_ITEMS})
+
+
+    return render(request, 'library/book/add_book.html', {'form': form, "nav_items": ADMINISTRATOR_NAV_ITEMS})
 
 
 @login_required(login_url='adminlogin')
@@ -101,7 +160,7 @@ def add_book_view(request):
 @require_http_methods(["GET"])
 def view_book_view(request):
     books = models.Book.objects.all()
-    return render(request, 'library/book/view_book.html', {'books': books})
+    return render(request, 'library/book/view_book.html', {'books': books, "nav_items": ADMINISTRATOR_NAV_ITEMS})
 
 
 @login_required(login_url='adminlogin')
@@ -110,14 +169,24 @@ def view_book_view(request):
 @require_http_methods(["GET", "POST"])
 def issue_book_view(request):
     form = forms.IssuedBookForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        models.IssuedBook.objects.create(
-            enrollment=request.POST.get('enrollment2'),
-            isbn=request.POST.get('isbn2')
-        )
-        return render(request, 'library/book/book_issued.html')
 
-    return render(request, 'library/book/issue_book.html', {'form': form})
+    if request.method == 'POST':
+        if form and form.is_valid():
+            isbn = request.POST.get('isbn2')
+            enrollment = request.POST.get('enrollment2')
+
+            book = models.Book.objects.filter(isbn=isbn).first()
+            if not book:
+                return render(request, 'library/book/issue_book.html', {'form': form, 'error_message': 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.', "nav_items": ADMINISTRATOR_NAV_ITEMS})
+
+            models.IssuedBook.objects.create(
+                enrollment=enrollment,
+                isbn=isbn
+            )
+
+            return render(request, 'library/book/book_issued.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
+
+    return render(request, 'library/book/issue_book.html', {'form': form, 'error_message': 'Formulário inválido.', "nav_items": ADMINISTRATOR_NAV_ITEMS})
 
 
 @login_required(login_url='adminlogin')
@@ -150,7 +219,7 @@ def view_issued_book_view(request):
                 issued_book.status
             ))
 
-    return render(request, 'library/book/view_issued_book.html', {'li': issued_books_list})
+    return render(request, 'library/book/view_issued_book.html', {'li': issued_books_list, "nav_items": ADMINISTRATOR_NAV_ITEMS})
 
 
 @login_required(login_url='adminlogin')
@@ -158,7 +227,7 @@ def view_issued_book_view(request):
 @require_http_methods(["GET"])
 def view_student_view(request):
     students = models.StudentExtra.objects.all()
-    return render(request, 'library/student/view_student.html', {'students': students})
+    return render(request, 'library/student/view_student.html', {'students': students, "nav_items": ADMINISTRATOR_NAV_ITEMS})
 
 
 @login_required(login_url='studentlogin')
@@ -167,7 +236,7 @@ def view_issued_book_by_student(request):
     student = models.StudentExtra.objects.filter(user=request.user).first()
 
     if not student:
-        return render(request, 'library/book/view_issued_book_by_student.html', {'combined_data': []})
+        return render(request, 'library/book/view_issued_book_by_student.html', {'combined_data': [], "nav_items": STUDENT_NAV_ITEMS})
 
     issued_books = models.IssuedBook.objects.filter(
         enrollment=student.enrollment)
@@ -196,7 +265,7 @@ def view_issued_book_by_student(request):
                 issued_book.id
             ))
 
-    return render(request, 'library/book/view_issued_book_by_student.html', {'combined_data': combined_data})
+    return render(request, 'library/book/view_issued_book_by_student.html', {'combined_data': combined_data, "nav_items": STUDENT_NAV_ITEMS})
 
 
 @login_required(login_url='studentlogin')
@@ -211,7 +280,7 @@ def return_book(request, id):
 
 @require_http_methods(["GET"])
 def about_us_view(request):
-    return render(request, 'library/about_us/index.html')
+    return render(request, 'library/about_us/index.html', {"nav_items": COMMON_NAV_ITEMS})
 
 
 @csrf_protect
@@ -239,7 +308,7 @@ def contactus_view(request):
                     recipient_list,
                     fail_silently=False,
                 )
-                return render(request, 'library/contact/success.html')
+                return render(request, 'library/contact/success.html', {'nav_items': COMMON_NAV_ITEMS})
 
             except Exception as exception:
                 logger.error(f"Erro ao enviar e-mail: {exception}")
@@ -248,4 +317,4 @@ def contactus_view(request):
                     'error_message': 'Erro ao enviar e-mail. Tente novamente mais tarde.'
                 })
 
-    return render(request, 'library/contact/index.html', {'form': submit})
+    return render(request, 'library/contact/index.html', {'form': submit, 'nav_items': COMMON_NAV_ITEMS})

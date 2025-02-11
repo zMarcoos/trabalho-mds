@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
 from library import views
-from django.contrib.auth.views import LoginView
+from library.views import AdminLoginView, StudentLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,10 +28,8 @@ urlpatterns = [
     path('studentclick', views.student_click_view),
 
     path('studentsignup', views.student_signup_view),
-    path('adminlogin', LoginView.as_view(
-        template_name='library/admin/admin_login.html')),
-    path('studentlogin', LoginView.as_view(
-        template_name='library/student/student_login.html')),
+    path('adminlogin', AdminLoginView.as_view(), name='adminlogin'),
+    path('studentlogin', StudentLoginView.as_view(), name='studentlogin'),
     path('returnbook/<int:id>/', views.return_book, name='returnbook'),
 
     path('logout', views.custom_logout_view, name='logout'),

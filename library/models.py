@@ -28,7 +28,7 @@ class Book(models.Model):
         ('history', 'História'),
         ]
     name=models.CharField(max_length=30)
-    isbn=models.PositiveIntegerField()
+    isbn=models.PositiveIntegerField(unique=True)
     author=models.CharField(max_length=40)
     category=models.CharField(max_length=30,choices=catchoice,default='education')
     def __str__(self):

@@ -11,6 +11,9 @@ class StudentUserForm(forms.ModelForm):
     class Meta:
         model=User
         fields=['first_name','last_name','username','password']
+        widgets = {
+            'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Digite sua senha'}),
+        }
 
 class StudentExtraForm(forms.ModelForm):
     class Meta:

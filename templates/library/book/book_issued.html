@@ -1,20 +1,47 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <title>Library Management</title>
-  </head>
-  <body>
-    {% include "library/admin/navbar_admin.html" %}
-    <br>
-    <br>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Livro Emprestado</title>
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
 
-<h3 class="p-3 mb-2 bg-primary text-white" style = 'font-size: 50px;text-align:center;'>Book Issued Successfully !</h3>
-<br><br>
-<div class="options" style="text-align:center">
-  <a href="issuebook" class="btn btn-primary btn-lg active">Click here to issue more Book</a><br><br>
-  <a href="viewissuedbook" class="btn btn-primary btn-lg active">Click here to view Issued Book</a><br><br>
-</div>
-<br>
-{% include "library/footer.html" %}
-  </body>
+  {% include "library/navbar.html" %}
+
+  <div class="container mx-auto text-center mt-24 px-6 flex-grow">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-lg mx-auto">
+      <h1 class="text-4xl font-extrabold text-blue-600 flex items-center justify-center">
+        <svg class="w-16 h-16 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-7.41l4.29-4.3a1 1 0 011.41 1.42l-5 5a1 1 0 01-1.41 0l-2.5-2.5a1 1 0 011.41-1.42L9 10.59z" clip-rule="evenodd" />
+        </svg>
+          Livro emprestado com sucesso!
+      </h1>
+
+      <p class="text-lg mt-4 text-gray-700">O livro foi emitido com sucesso para o usuário.</p>
+      <hr class="my-6 border-gray-300">
+      <p class="text-gray-700">Escolha uma ação abaixo:</p>
+
+      <div class="mt-6 flex flex-col space-y-4">
+        <a href="issuebook" class="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition text-lg">
+          <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 20a10 10 0 100-20 10 10 0 000 20zm-1-9h2V5h-2v6zm0 4h2v-2h-2v2z" clip-rule="evenodd" />
+          </svg>
+          Emitir outro livro
+        </a>
+
+        <a href="viewissuedbook" class="inline-block bg-gray-700 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition text-lg">
+          <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 20a10 10 0 100-20 10 10 0 000 20zm-1-9h2V5h-2v6zm0 4h2v-2h-2v2z" clip-rule="evenodd" />
+          </svg>
+          Ver livros emprestados
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% include "library/footer.html" %}
+
+</body>
 </html>

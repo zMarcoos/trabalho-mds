@@ -4,13 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Área do Estudante</title>
-  <script src="https://cdn.tailwindcss.com"
-        integrity="sha384-xxxxx"
-        crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
 
-  {% include "library/student/navbar_student.html" %}
+  {% include "library/navbar.html" %}
 
   <div class="container mx-auto text-center mt-24 px-6 flex-grow">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
@@ -23,7 +21,7 @@
 
       <div class="mt-6">
         <button onclick="window.location.href='viewissuedbookbystudent'"
-          class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition text-lg">
+          class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition text-lg cursor-pointer">
           Visualizar livros emprestados
         </button>
       </div>
