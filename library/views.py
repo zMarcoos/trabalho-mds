@@ -71,6 +71,35 @@ class StudentLoginView(LoginView):
         return context
 
 
+class CustomLoginView(LoginView):
+    template_name = 'library/auth/login.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user_type = self.kwargs.get('user_type')
+        if user_type == "admin":
+            context.update({
+                "title": "Login do Administrador",
+                "heading": "Login do Administrador",
+                "description": "Acesse sua conta para continuar.",
+                "action_url": "/adminlogin",
+                "show_signup_link": False,
+                "nav_items": AUTH_NAV_ITEMS,
+            })
+        else:
+            context.update({
+                "title": "Login do Estudante",
+                "heading": "Login do Estudante",
+                "description": "Acesse sua conta para continuar.",
+                "action_url": "/studentlogin",
+                "show_signup_link": True,
+                "nav_items": AUTH_NAV_ITEMS,
+            })
+
+        return context
+
+
 @require_http_methods(["GET"])
 def custom_logout_view(request):
     logout(request)

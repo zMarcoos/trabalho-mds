@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
 from library import views
-from library.views import AdminLoginView, StudentLoginView
+from library.views import CustomLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,8 +29,7 @@ urlpatterns = [
 
     path('studentsignup', views.student_signup_page, name="studentsignup"),
     path('studentsignup/action', views.student_signup_action, name="studentsignup_action"),
-    path('adminlogin', AdminLoginView.as_view(), name='adminlogin'),
-    path('studentlogin', StudentLoginView.as_view(), name='studentlogin'),
+    path('<str:user_type>login', CustomLoginView.as_view(), name='custom_login'),
     path('returnbook/<int:id>/', views.return_book, name='returnbook'),
 
     path('logout', views.custom_logout_view, name='logout'),
