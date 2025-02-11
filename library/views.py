@@ -171,7 +171,7 @@ def issue_book_view(request):
     form = forms.IssuedBookForm(request.POST or None)
 
     if request.method == 'POST':
-        if form and form.is_valid():
+        if form.is_valid():
             isbn = request.POST.get('isbn2')
             enrollment = request.POST.get('enrollment2')
 
@@ -185,8 +185,10 @@ def issue_book_view(request):
             )
 
             return render(request, 'library/book/book_issued.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
+        else:
+            return render(request, 'library/book/issue_book.html', {'form': form, 'error_message': 'Formulário inválido.', "nav_items": ADMINISTRATOR_NAV_ITEMS})
 
-    return render(request, 'library/book/issue_book.html', {'form': form, 'error_message': 'Formulário inválido.', "nav_items": ADMINISTRATOR_NAV_ITEMS})
+    return render(request, 'library/book/issue_book.html', {'form': form, "nav_items": ADMINISTRATOR_NAV_ITEMS})
 
 
 @login_required(login_url='adminlogin')
