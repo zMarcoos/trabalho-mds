@@ -71,25 +71,40 @@
     {% include "library/footer.html" %}
 
     <script>
+        function getCSRFToken() {
+            return document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+        }
+
         function returnBook(button) {
             const bookId = button.getAttribute("data-book-id");
-            document.getElementById(`status-${bookId}`).innerText = "Devolvido";
+            const csrfToken = getCSRFToken();
 
-            button.innerText = "Devolvido";
-            button.classList.add("bg-gray-400", "cursor-not-allowed");
-            button.setAttribute("disabled", "true");
-
-            fetch(`/returnbook/${bookId}/`)
-                .then(response => {
-                    if (!response.ok) {
-                        alert("Erro ao devolver o livro. Tente novamente.");
-                        location.reload();
-                    }
-                })
-                .catch(() => {
-                    alert("Erro ao conectar ao servidor.");
-                    location.reload();
-                });
+            fetch(`/returnbook/${bookId}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erro ao devolver o livro.");
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById(`status-${bookId}`).innerText = "Devolvido";
+                button.innerText = "Devolvido";
+                button.classList.add("bg-gray-400", "cursor-not-allowed");
+                button.setAttribute("disabled", "true");
+            })
+            .catch(error => {
+                location.reload();
+            });
         }
     </script>
 </body>
