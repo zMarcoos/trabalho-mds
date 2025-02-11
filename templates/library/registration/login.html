@@ -13,10 +13,10 @@
   <div class="container mx-auto text-center mt-24 px-6 flex-grow">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-lg mx-auto">
       <h1 class="text-4xl font-extrabold text-gray-900">{{ heading }}</h1>
-      <p class="text-lg mt-4 text-gray-700">{{ description }}</p>
+      <p class="text-lg mt-4 text-gray-700">Acesse sua conta para continuar.</p>
       <hr class="my-6 border-gray-300">
 
-      <form method="post" action="{{ action_url }}" class="space-y-4 text-left">
+      <form method="post" action="{% url 'custom_login' %}?type={{ user_type }}" class="space-y-4 text-left">
         {% csrf_token %}
 
         {% for field in form %}

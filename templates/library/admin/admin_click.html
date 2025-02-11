@@ -16,9 +16,11 @@
       <p class="text-lg mt-4 text-gray-700">Boas-vindas ao sistema de gerenciamento da biblioteca on-line.</p>
       <hr class="my-6 border-gray-300">
       <p class="text-gray-700">Acesse diversos recursos após o login.</p>
-      <button onclick="window.location.href='adminlogin'" class="mt-4 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition text-lg cursor-pointer">
+
+      <a href="{% url 'custom_login' %}?type=admin"
+         class="mt-4 inline-block bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition text-lg">
         Login
-      </button>
+      </a>
     </div>
   </div>
 

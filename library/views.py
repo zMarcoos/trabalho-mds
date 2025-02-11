@@ -12,6 +12,7 @@ from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
 
 COMMON_NAV_ITEMS = [
     {"name": "Sobre nós", "url": "/aboutus"},
@@ -51,48 +52,35 @@ STUDENT_NAV_ITEMS = [
 
 logger = logging.getLogger(__name__)
 
-class AdminLoginView(LoginView):
-    template_name = 'library/admin/admin_login.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['nav_items'] = AUTH_NAV_ITEMS
-
-        return context
-
-
-class StudentLoginView(LoginView):
-    template_name = 'library/student/student_login.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['nav_items'] = AUTH_NAV_ITEMS
-
-        return context
-
 
 class CustomLoginView(LoginView):
-    template_name = 'library/auth/login.html'
+    template_name = 'library/registration/login.html'
+
+    def form_valid(self, form):
+        user = form.get_user()
+        login(self.request, user)
+
+        if user.is_superuser or user.is_staff or user.groups.filter(name='STUDENT').exists():
+            return redirect('afterlogin')
+        else:
+            return redirect('/')
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        user_type = self.kwargs.get('user_type')
+        user_type = self.request.GET.get('type', 'student')
         if user_type == "admin":
             context.update({
-                "title": "Login do Administrador",
-                "heading": "Login do Administrador",
-                "description": "Acesse sua conta para continuar.",
-                "action_url": "/adminlogin",
+                "title": "Login do administrador",
+                "heading": "Acesso do administrador",
                 "show_signup_link": False,
                 "nav_items": AUTH_NAV_ITEMS,
             })
         else:
             context.update({
-                "title": "Login do Estudante",
-                "heading": "Login do Estudante",
-                "description": "Acesse sua conta para continuar.",
-                "action_url": "/studentlogin",
+                "title": "Login do estudante",
+                "heading": "Acesso do estudante",
                 "show_signup_link": True,
                 "nav_items": AUTH_NAV_ITEMS,
             })
@@ -155,7 +143,8 @@ def student_signup_action(request):
         student_extra_data.user = student_account
         student_extra_data.save()
 
-        Group.objects.get_or_create(name='STUDENT')[0].user_set.add(student_account)
+        Group.objects.get_or_create(name='STUDENT')[
+            0].user_set.add(student_account)
 
         return redirect('studentlogin')
 
@@ -175,11 +164,14 @@ def is_student(user):
 
 
 @require_http_methods(["GET"])
-def after_login_view(request):
+@login_required
+def after_login_page(request):
     if is_admin(request.user):
         return render(request, 'library/admin/admin_after_login.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
     elif is_student(request.user):
         return render(request, 'library/student/student_after_login.html', {"nav_items": STUDENT_NAV_ITEMS})
+
+    return redirect('/')
 
 
 @login_required(login_url='adminlogin')

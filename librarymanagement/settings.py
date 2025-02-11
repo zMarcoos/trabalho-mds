@@ -126,8 +126,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-LOGIN_REDIRECT_URL='/afterlogin'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/afterlogin'
+LOGOUT_REDIRECT_URL = '/'
 
 #for email
 EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
