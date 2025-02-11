@@ -13,6 +13,42 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.views import LoginView
 
+COMMON_NAV_ITEMS = [
+    {"name": "Sobre nós", "url": "/aboutus"},
+    {"name": "Contate-nos", "url": "/contactus"},
+]
+
+AUTH_NAV_ITEMS = [
+    {"name": "Administrador", "url": "/adminclick"},
+    {"name": "Estudante", "url": "/studentclick"},
+    *COMMON_NAV_ITEMS,
+]
+
+ADMINISTRATOR_NAV_ITEMS = [
+    {"name": "Livros", "submenu": [
+        {"name": "Adicionar livro", "url": "/addbook"},
+        {"name": "Visualizar livros", "url": "/viewbook"}
+    ]},
+    {"name": "Empréstimos", "submenu": [
+        {"name": "Emitir livro", "url": "/issuebook"},
+        {"name": "Livros emprestados", "url": "/viewissuedbook"}
+    ]},
+    {"name": "Estudantes", "submenu": [
+        {"name": "Visualizar estudantes", "url": "/viewstudent"}
+    ]},
+    *COMMON_NAV_ITEMS,
+    {"name": "Sair", "url": "/logout"},
+]
+
+STUDENT_NAV_ITEMS = [
+    {"name": "Livros", "submenu": [
+        {"name": "Livros emprestados", "url": "/viewissuedbookbystudent"},
+    ]},
+    *COMMON_NAV_ITEMS,
+    {"name": "Sair", "url": "/logout"},
+]
+
+
 logger = logging.getLogger(__name__)
 
 class AdminLoginView(LoginView):
@@ -34,39 +70,6 @@ class StudentLoginView(LoginView):
 
         return context
 
-
-COMMON_NAV_ITEMS = [
-    {"name": "Administrador", "url": "/adminclick"},
-    {"name": "Estudante", "url": "/studentclick"},
-    {"name": "Sobre nós", "url": "/aboutus"},
-    {"name": "Contate-nos", "url": "/contactus"},
-]
-
-ADMINISTRATOR_NAV_ITEMS = [
-    {"name": "Livros", "submenu": [
-        {"name": "Adicionar livro", "url": "/addbook"},
-        {"name": "Visualizar livros", "url": "/viewbook"}
-    ]},
-    {"name": "Empréstimos", "submenu": [
-        {"name": "Emitir livro", "url": "/issuebook"},
-        {"name": "Livros emprestados", "url": "/viewissuedbook"}
-    ]},
-    {"name": "Estudantes", "submenu": [
-        {"name": "Visualizar estudantes", "url": "/viewstudent"}
-    ]},
-    {"name": "Sobre nós", "url": "/aboutus"},
-    {"name": "Contate-nos", "url": "/contactus"},
-    {"name": "Sair", "url": "/logout"},
-]
-
-STUDENT_NAV_ITEMS = [
-    {"name": "Livros", "submenu": [
-        {"name": "Livros emprestados", "url": "/viewissuedbookbystudent"},
-    ]},
-    {"name": "Sobre nós", "url": "/aboutus"},
-    {"name": "Contate-nos", "url": "/contactus"},
-    {"name": "Sair", "url": "/logout"},
-]
 
 @require_http_methods(["GET"])
 def custom_logout_view(request):
