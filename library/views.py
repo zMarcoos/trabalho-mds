@@ -200,18 +200,19 @@ def issue_book_page(request):
 @require_http_methods(["POST"])
 def issue_book_action(request):
     form = forms.IssuedBookForm(request.POST)
+    page = 'library/book/issue_book.html'
 
     if form.is_valid():
         isbn = form.cleaned_data.get('isbn2')
         enrollment = form.cleaned_data.get('enrollment2')
 
         if not models.Book.objects.filter(isbn=isbn).exists():
-            return render_form_page(request, 'library/book/issue_book.html', form, ADMINISTRATOR_NAV_ITEMS, 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.')
+            return render_form_page(request, page, form, ADMINISTRATOR_NAV_ITEMS, 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.')
 
         models.IssuedBook.objects.create(enrollment=enrollment, isbn=isbn)
         return render(request, 'library/book/book_issued.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
 
-    return render_form_page(request, 'library/book/issue_book.html', form, ADMINISTRATOR_NAV_ITEMS)
+    return render_form_page(request, page, form, ADMINISTRATOR_NAV_ITEMS)
 
 
 def render_form_page(request, template, form, nav_items, error_message=None):
@@ -327,6 +328,7 @@ def contactus_page(request):
 @require_http_methods(["POST"])
 def contactus_action(request):
     submit = forms.ContactusForm(request.POST)
+    page = 'library/contact/index.html'
 
     if submit.is_valid():
         email = submit.cleaned_data['Email']
@@ -348,6 +350,6 @@ def contactus_action(request):
 
         except Exception as exception:
             logger.error(f"Erro ao enviar e-mail: {exception}")
-            return render_form_page(request, 'library/contact/index.html', submit, AUTH_NAV_ITEMS, 'Erro ao enviar e-mail. Tente novamente mais tarde.')
+            return render_form_page(request, page, submit, AUTH_NAV_ITEMS, 'Erro ao enviar e-mail. Tente novamente mais tarde.')
 
-    return render_form_page(request, 'library/contact/index.html', submit, AUTH_NAV_ITEMS)
+    return render_form_page(request, page, submit, AUTH_NAV_ITEMS)
