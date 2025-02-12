@@ -5,6 +5,10 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Adicionar livro</title>
+	<link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+
 	<script src="https://unpkg.com/@tailwindcss/browser@4.0.0" integrity="sha384-fsXZ0Oru5QjGkveFx8DdmBAyKdwnJ7TnbRzDN5LROCKt8PAN8h7y7oqCwtk9cN68" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
@@ -27,19 +31,32 @@
 				{% csrf_token %}
 
 				{% for field in form %}
-				<div>
+				<div class="mb-4">
 					<label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium">
-						{% if field.label == "Name" %} Nome do Livro {% elif field.label == "Isbn" %} ISBN {% elif field.label == "Author" %} Autor {% elif field.label == "Category" %} Categoria {% else %} {{ field.label }} {% endif %}
-				</label>
+						{% if field.label == "Name" %} Nome do Livro
+						{% elif field.label == "Isbn" %} ISBN
+						{% elif field.label == "Author" %} Autor
+						{% elif field.label == "Category" %} Categoria
+						{% elif field.label == "Image url" %} URL da imagem
+						{% elif field.label == "Quantity" %} Quantidade
+						{% else %} {{ field.label }}
+						{% endif %}
+					</label>
 					{{ field }}
+
+					{% if field.errors %}
+						<p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+					{% endif %}
 				</div>
 				{% endfor %}
 
-				<button type="submit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition text-lg cursor-pointer">Adicionar livro</button>
+				<button type="submit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition text-lg cursor-pointer">
+					Adicionar livro
+				</button>
 			</form>
 
 			<div class="text-center mt-4 text-gray-700">
-				Ver livros disponíveis? <a href="viewbook" class="text-blue-600 hover:underline">Clique aqui</a>
+				Ver livros disponíveis? <a href="{% url 'viewbook' %}" class="text-blue-600 hover:underline">Clique aqui</a>
 			</div>
 		</div>
 	</div>

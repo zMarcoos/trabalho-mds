@@ -36,13 +36,13 @@ urlpatterns = [
     path('logout', views.custom_logout_view, name='logout'),
     path('afterlogin', views.after_login_page, name='afterlogin'),
 
-    path('addbook', views.add_book_page),
+    path('addbook', views.add_book_page, name='addbook'),
     path('addbook/action', views.add_book_action, name='addbook_action'),
-    path('viewbook', views.view_book_view),
+    path('viewbook', views.view_book_view, name='viewbook'),
     path('issuebook', views.issue_book_page, name='issuebook'),
     path('issuebook/action', views.issue_book_action, name='issuebook_action'),
-    path('viewissuedbook', views.view_issued_book_view),
-    path('viewstudent', views.view_student_view),
+    path('viewissuedbook', views.view_issued_book_view, name='viewissuedbook'),
+    path('viewstudent', views.view_student_view, name='viewstudent'),
     path('viewissuedbookbystudent', views.view_issued_book_by_student,
          name='viewissuedbookbystudent'),
 

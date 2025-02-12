@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="en">
+<html lang="pt">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Livros disponíveis</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+
   <script src="https://unpkg.com/@tailwindcss/browser@4.0.0" integrity="sha384-fsXZ0Oru5QjGkveFx8DdmBAyKdwnJ7TnbRzDN5LROCKt8PAN8h7y7oqCwtk9cN68" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
@@ -22,19 +26,37 @@
         <table class="w-full border border-gray-300 text-center table-auto">
           <thead class="bg-gray-900 text-white">
             <tr>
+              <th class="py-2 px-4">Imagem</th>
               <th class="py-2 px-4">Nome do Livro</th>
               <th class="py-2 px-4">ISBN</th>
               <th class="py-2 px-4">Autor</th>
               <th class="py-2 px-4">Categoria</th>
+              <th class="py-2 px-4">Quantidade</th>
             </tr>
           </thead>
           <tbody>
             {% for book in books %}
             <tr class="border-t border-gray-300">
-              <td class="py-2 px-4">{{ book.name }}</td>
+              <td class="py-2 px-4">
+                {% if book.image_url %}
+                  <img src="{{ book.image_url }}" alt="Capa de {{ book.name }}" class="h-20 mx-auto rounded shadow">
+                {% else %}
+                  <span class="text-gray-500">Sem imagem</span>
+                {% endif %}
+              </td>
+              <td class="py-2 px-4 font-semibold">{{ book.name }}</td>
               <td class="py-2 px-4">{{ book.isbn }}</td>
               <td class="py-2 px-4">{{ book.author }}</td>
-              <td class="py-2 px-4">{{ book.category }}</td>
+              <td class="py-2 px-4">{{ book.get_category_display }}</td>
+              <td class="py-2 px-4 font-bold">
+                {% if book.quantity <= 1 %}
+                  <span class="text-red-600">{{ book.quantity }}</span>
+                {% elif book.quantity > 1 and book.quantity <= 3 %}
+                  <span class="text-yellow-600">{{ book.quantity }}</span>
+                {% else %}
+                  <span class="text-green-600">{{ book.quantity }}</span>
+                {% endif %}
+              </td>
             </tr>
             {% endfor %}
           </tbody>
