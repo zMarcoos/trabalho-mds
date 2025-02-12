@@ -8,7 +8,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
-    
+
     <script src="https://unpkg.com/@tailwindcss/browser@4.0.0" integrity="sha384-fsXZ0Oru5QjGkveFx8DdmBAyKdwnJ7TnbRzDN5LROCKt8PAN8h7y7oqCwtk9cN68" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
@@ -48,13 +48,30 @@
                             <td class="py-2 px-4">{{ author }}</td>
                             <td class="py-2 px-4">{{ issue_date }}</td>
                             <td class="py-2 px-4">{{ expiry_date }}</td>
-                            <td class="py-2 px-4">{% if status == "Returned" %}Sem Multa{% else %}{{ fine }}{% endif %}</td>
-                            <td class="py-2 px-4 font-bold" id="status-{{ book_id }}">{% if status == "Returned" %}Retornado{% else %}Emprestado{% endif %}</td>
+                            <td class="py-2 px-4">
+                                {% if status == "Returned" %}
+                                    <span class="text-green-600 font-bold">Sem Multa</span>
+                                {% else %}
+                                    <span class="{% if fine > 0 %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                                        {{ fine }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2 px-4 font-bold">
+                                {% if status == "Returned" %}
+                                    <span class="text-green-600">Retornado</span>
+                                {% else %}
+                                    <span class="text-yellow-600">Emprestado</span>
+                                {% endif %}
+                            </td>
                             <td class="py-2 px-4">
                                 {% if status == "Issued" %}
-                                <button data-book-id="{{ book_id }}" class="bg-red-600 text-white py-1 px-3 rounded-lg hover:bg-red-700 transition cursor-pointer" onclick="returnBook(this)">
-                                    Devolver
-                                </button>
+                                <form method="post" action="{% url 'returnbook' book_id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-red-600 text-white py-1 px-3 rounded-lg hover:bg-red-700 transition cursor-pointer">
+                                        Devolver
+                                    </button>
+                                </form>
                                 {% else %}
                                 <button class="bg-gray-400 text-white py-1 px-3 rounded-lg cursor-not-allowed" disabled>
                                     Devolvido
@@ -74,42 +91,5 @@
 
     {% include "library/footer.html" %}
 
-    <script>
-        function getCSRFToken() {
-            return document.cookie
-                .split('; ')
-                .find(row => row.startsWith('csrftoken='))
-                ?.split('=')[1];
-        }
-
-        function returnBook(button) {
-            const bookId = button.getAttribute("data-book-id");
-            const csrfToken = getCSRFToken();
-
-            fetch(`/returnbook/${bookId}/`, {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": csrfToken,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({})
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Erro ao devolver o livro.");
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById(`status-${bookId}`).innerText = "Devolvido";
-                button.innerText = "Devolvido";
-                button.classList.add("bg-gray-400", "cursor-not-allowed");
-                button.setAttribute("disabled", "true");
-            })
-            .catch(error => {
-                location.reload();
-            });
-        }
-    </script>
 </body>
 </html>

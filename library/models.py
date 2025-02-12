@@ -48,9 +48,9 @@ class Book(models.Model):
         ('history', 'História da Tecnologia'),
     ]
 
-    name = models.CharField(max_length=100)
-    isbn = models.PositiveIntegerField(unique=True)
-    author = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True)
+    isbn = models.PositiveIntegerField()
+    author = models.CharField(max_length=100, blank=True)
     category = models.CharField(max_length=30, choices=categories, default=categories[0][0])
     image_url = models.URLField(max_length=500, blank=True, null=True)
     quantity = models.PositiveIntegerField(default=1)

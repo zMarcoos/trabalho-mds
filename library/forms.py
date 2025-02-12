@@ -11,17 +11,45 @@ class ContactusForm(forms.Form):
 
 class StudentUserForm(forms.ModelForm):
     class Meta:
-        model=User
-        fields=['first_name','last_name','username','password']
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'password']
         widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite seu nome'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite seu sobrenome'}),
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Escolha um nome de usuário'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Digite sua senha'}),
         }
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Este nome de usuário já está em uso. Escolha outro.")
+
+        return username
 
 
 class StudentExtraForm(forms.ModelForm):
     class Meta:
-        model=models.StudentExtra
-        fields=['enrollment','branch']
+        model = models.StudentExtra
+        fields = ['enrollment', 'branch']
+        widgets = {
+            'enrollment': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite sua matrícula'}),
+            'branch': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Informe seu curso'}),
+        }
+
+        def clean_enrollment(self):
+            enrollment = self.cleaned_data.get('enrollment')
+            if models.StudentExtra.objects.filter(enrollment=enrollment).exists():
+                raise forms.ValidationError("Esta matrícula já está em uso. Utilize outra.")
+
+            return enrollment
+
+    def clean_enrollment(self):
+        enrollment = self.cleaned_data.get('enrollment')
+        if not enrollment.isdigit():
+            raise forms.ValidationError("A matrícula deve conter apenas números.")
+
+        return enrollment
 
 
 class BookForm(forms.ModelForm):
@@ -44,9 +72,6 @@ class BookForm(forms.ModelForm):
         if not isbn.isdigit():
             raise forms.ValidationError("O ISBN deve conter apenas números.")
 
-        if Book.objects.filter(isbn=isbn).exists():
-            raise forms.ValidationError("Este ISBN já está cadastrado.")
-
         if len(isbn) == 10:
             if not self.is_valid_isbn10(isbn):
                 raise forms.ValidationError("ISBN-10 inválido.")
@@ -61,10 +86,8 @@ class BookForm(forms.ModelForm):
 
     def clean_image_url(self):
         image_url = self.cleaned_data.get('image_url')
-        if image_url:
-            if not image_url.startswith(('http://', 'https://')):
-                raise forms.ValidationError("A URL da imagem deve começar com http:// ou https://")
-
+        if image_url and not image_url.startswith('https://'):
+            raise forms.ValidationError("A URL da imagem deve começar com https://")
         return image_url
 
 
@@ -92,12 +115,12 @@ class BookForm(forms.ModelForm):
 
 
 class IssuedBookForm(forms.Form):
-    isbn2 = forms.ModelChoiceField(
+    book = forms.ModelChoiceField(
         queryset=models.Book.objects.all(),
         empty_label="Selecione alguma opção",
         to_field_name="isbn",label='Nome & ISBN'
     )
-    enrollment2=forms.ModelChoiceField(
+    enrollment = forms.ModelChoiceField(
         queryset=models.StudentExtra.objects.all(),
         empty_label="Selecione alguma opção",to_field_name='enrollment',
         label='Nome e matrícula'

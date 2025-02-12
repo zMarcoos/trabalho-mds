@@ -26,7 +26,8 @@
         <table class="w-full border border-gray-300 text-center table-auto">
           <thead class="bg-gray-900 text-white">
             <tr>
-              <th class="py-2 px-4">Nome</th>
+              <th class="py-2 px-4">Usuário</th>
+              <th class="py-2 px-4">Nome completo</th>
               <th class="py-2 px-4">Matrícula</th>
               <th class="py-2 px-4">Curso</th>
             </tr>
@@ -34,7 +35,8 @@
           <tbody>
             {% for s in students %}
             <tr class="border-t border-gray-300">
-              <td class="py-2 px-4">{{ s.get_name }}</td>
+              <td class="py-2 px-4">{{ s.user.username }}</td>
+              <td class="py-2 px-4">{{ s.user.first_name }} {{ s.user.last_name }}</td>
               <td class="py-2 px-4">{{ s.enrollment }}</td>
               <td class="py-2 px-4">{{ s.branch }}</td>
             </tr>

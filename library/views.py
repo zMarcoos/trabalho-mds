@@ -12,7 +12,8 @@ from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login
+from django.urls import reverse
 
 COMMON_NAV_ITEMS = [
     {"name": "Sobre nós", "url": "/aboutus"},
@@ -66,6 +67,19 @@ class CustomLoginView(LoginView):
             return redirect('/')
 
 
+    def form_invalid(self, form):
+        username = self.request.POST.get('username')
+        password = self.request.POST.get('password')
+
+        user = authenticate(username=username, password=password)
+        if user is None:
+            error_message = "Usuário não encontrado ou senha incorreta."
+        else:
+            error_message = "Erro ao tentar logar. Verifique seus dados."
+
+        return self.render_to_response(self.get_context_data(form=form, error_message=error_message))
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -85,6 +99,7 @@ class CustomLoginView(LoginView):
                 "nav_items": AUTH_NAV_ITEMS,
             })
 
+        context["error_message"] = kwargs.get('error_message', None)
         return context
 
 
@@ -146,7 +161,8 @@ def student_signup_action(request):
         Group.objects.get_or_create(name='STUDENT')[
             0].user_set.add(student_account)
 
-        return redirect('studentlogin')
+        login_url = reverse('custom_login') + "?type=student"
+        return HttpResponseRedirect(login_url)
 
     return render(request, 'library/student/student_signup.html', {
         "form1": first_form,
@@ -190,7 +206,14 @@ def add_book_action(request):
     form = forms.BookForm(request.POST)
 
     if form.is_valid():
-        form.save()
+        isbn = form.cleaned_data['isbn']
+        quantity = form.cleaned_data['quantity']
+
+        book, created = models.Book.objects.get_or_create(isbn=isbn, defaults=form.cleaned_data)
+        if not created:
+            book.quantity += quantity
+            book.save()
+
         return render(request, 'library/book/book_added.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
 
     return render(request, 'library/book/add_book.html', {
@@ -215,22 +238,25 @@ def issue_book_page(request):
     return render_form_page(request, 'library/book/issue_book.html', forms.IssuedBookForm(), ADMINISTRATOR_NAV_ITEMS)
 
 
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
 @csrf_protect
 @require_http_methods(["POST"])
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
 def issue_book_action(request):
     form = forms.IssuedBookForm(request.POST)
     page = 'library/book/issue_book.html'
 
     if form.is_valid():
-        isbn = form.cleaned_data.get('isbn2')
-        enrollment = form.cleaned_data.get('enrollment2')
+        book = form.cleaned_data.get('book')
+        enrollment = form.cleaned_data.get('enrollment')
 
-        if not models.Book.objects.filter(isbn=isbn).exists():
-            return render_form_page(request, page, form, ADMINISTRATOR_NAV_ITEMS, 'Livro não encontrado ou múltiplos livros com o mesmo ISBN.')
+        if not book or book.quantity <= 0:
+            return render_form_page(request, page, form, ADMINISTRATOR_NAV_ITEMS, 'Livro indisponível para empréstimo.')
 
-        models.IssuedBook.objects.create(enrollment=enrollment, isbn=isbn)
+        models.IssuedBook.objects.create(enrollment=enrollment.enrollment, isbn=book.isbn)
+        book.quantity -= 1
+        book.save()
+
         return render(request, 'library/book/book_issued.html', {"nav_items": ADMINISTRATOR_NAV_ITEMS})
 
     return render_form_page(request, page, form, ADMINISTRATOR_NAV_ITEMS)
@@ -328,10 +354,23 @@ def view_issued_book_by_student(request):
 @csrf_protect
 @require_http_methods(["POST"])
 def return_book(request, id):
-    issued_book = models.IssuedBook.objects.get(pk=id)
-    issued_book.status = "Returned"
-    issued_book.save()
-    return redirect('viewissuedbookbystudent')
+    try:
+        issued_book = models.IssuedBook.objects.get(pk=id)
+
+        if issued_book.status == "Returned":
+            return redirect('viewissuedbookbystudent')
+
+        issued_book.status = "Returned"
+        issued_book.save()
+
+        book = models.Book.objects.filter(isbn=issued_book.isbn).first()
+        if book:
+            book.quantity += 1
+            book.save()
+
+        return redirect('viewissuedbookbystudent')
+    except models.IssuedBook.DoesNotExist:
+        return redirect('viewissuedbookbystudent')
 
 
 @require_http_methods(["GET"])
