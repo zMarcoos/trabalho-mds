@@ -1,26 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
+from library.utils import get_expiry
+
 
 class StudentExtra(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     enrollment = models.CharField(max_length=40)
     branch = models.CharField(max_length=40)
 
+
     def __str__(self):
-        return self.user.first_name + '[' + str(self.enrollment) + ']'
-
-    @property
-    def get_name(self):
-        return self.user.first_name
-
-    @property
-    def getuserid(self):
-        return self.user.id
+        return f"{self.user.first_name} [{self.enrollment}]"
 
 
 class Book(models.Model):
-    categories = [
+    CATEGORIES = [
         ('programming', 'Programação'),
         ('data_structure', 'Estrutura de Dados'),
         ('software_engineering', 'Engenharia de Software'),
@@ -51,31 +45,27 @@ class Book(models.Model):
     name = models.CharField(max_length=100, blank=True)
     isbn = models.PositiveIntegerField()
     author = models.CharField(max_length=100, blank=True)
-    category = models.CharField(max_length=30, choices=categories, default=categories[0][0])
+    category = models.CharField(max_length=30, choices=CATEGORIES, default=CATEGORIES[0][0])
     image_url = models.URLField(max_length=500, blank=True, null=True)
     quantity = models.PositiveIntegerField(default=1)
 
+
     def __str__(self):
         return f"{self.name} [{self.isbn}]"
-
-    def is_available(self):
-        return self.quantity > 0
-
-
-def get_expiry():
-    return datetime.today() + timedelta(days=15)
 
 
 class IssuedBook(models.Model):
     enrollment = models.CharField(max_length=30)
     isbn = models.CharField(max_length=30)
-    issuedate = models.DateField(auto_now=True)
-    expirydate = models.DateField(default=get_expiry)
-    statuschoice = [
+    issue_date = models.DateField(auto_now=True)
+    expiry_date = models.DateField(default=get_expiry)
+
+    STATUS_CHOICE = [
         ('Issued', 'Issued'),
         ('Returned', 'Returned'),
     ]
-    status = models.CharField(max_length=20, choices=statuschoice, default="Issued")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICE, default=STATUS_CHOICE[0][0])
+
 
     def __str__(self):
         return self.enrollment

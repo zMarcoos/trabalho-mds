@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from . import models
 from library.models import Book
 
+
 class ContactusForm(forms.Form):
     Nome = forms.CharField(max_length=30)
     Email = forms.EmailField()
@@ -19,6 +20,7 @@ class StudentUserForm(forms.ModelForm):
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Escolha um nome de usuário'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Digite sua senha'}),
         }
+
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -37,12 +39,14 @@ class StudentExtraForm(forms.ModelForm):
             'branch': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Informe seu curso'}),
         }
 
+
         def clean_enrollment(self):
             enrollment = self.cleaned_data.get('enrollment')
             if models.StudentExtra.objects.filter(enrollment=enrollment).exists():
                 raise forms.ValidationError("Esta matrícula já está em uso. Utilize outra.")
 
             return enrollment
+
 
     def clean_enrollment(self):
         enrollment = self.cleaned_data.get('enrollment')

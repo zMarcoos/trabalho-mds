@@ -14,41 +14,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-
-COMMON_NAV_ITEMS = [
-    {"name": "Sobre nós", "url": "/aboutus"},
-    {"name": "Contate-nos", "url": "/contactus"},
-]
-
-AUTH_NAV_ITEMS = [
-    {"name": "Administrador", "url": "/adminclick"},
-    {"name": "Estudante", "url": "/studentclick"},
-    *COMMON_NAV_ITEMS,
-]
-
-ADMINISTRATOR_NAV_ITEMS = [
-    {"name": "Livros", "submenu": [
-        {"name": "Adicionar livro", "url": "/addbook"},
-        {"name": "Visualizar livros", "url": "/viewbook"}
-    ]},
-    {"name": "Empréstimos", "submenu": [
-        {"name": "Emitir livro", "url": "/issuebook"},
-        {"name": "Livros emprestados", "url": "/viewissuedbook"}
-    ]},
-    {"name": "Estudantes", "submenu": [
-        {"name": "Visualizar estudantes", "url": "/viewstudent"}
-    ]},
-    *COMMON_NAV_ITEMS,
-    {"name": "Sair", "url": "/logout"},
-]
-
-STUDENT_NAV_ITEMS = [
-    {"name": "Livros", "submenu": [
-        {"name": "Livros emprestados", "url": "/viewissuedbookbystudent"},
-    ]},
-    *COMMON_NAV_ITEMS,
-    {"name": "Sair", "url": "/logout"},
-]
+from library.utils import AUTH_NAV_ITEMS, ADMINISTRATOR_NAV_ITEMS, STUDENT_NAV_ITEMS
 
 
 logger = logging.getLogger(__name__)
@@ -56,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class CustomLoginView(LoginView):
     template_name = 'library/registration/login.html'
+
 
     def form_valid(self, form):
         user = form.get_user()
@@ -209,7 +176,8 @@ def add_book_action(request):
         isbn = form.cleaned_data['isbn']
         quantity = form.cleaned_data['quantity']
 
-        book, created = models.Book.objects.get_or_create(isbn=isbn, defaults=form.cleaned_data)
+        book, created = models.Book.objects.get_or_create(
+            isbn=isbn, defaults=form.cleaned_data)
         if not created:
             book.quantity += quantity
             book.save()
@@ -253,7 +221,8 @@ def issue_book_action(request):
         if not book or book.quantity <= 0:
             return render_form_page(request, page, form, ADMINISTRATOR_NAV_ITEMS, 'Livro indisponível para empréstimo.')
 
-        models.IssuedBook.objects.create(enrollment=enrollment.enrollment, isbn=book.isbn)
+        models.IssuedBook.objects.create(
+            enrollment=enrollment.enrollment, isbn=book.isbn)
         book.quantity -= 1
         book.save()
 
@@ -279,10 +248,10 @@ def view_issued_book_view(request):
     issued_books_list = []
 
     for issued_book in issued_books:
-        issued_book_date = issued_book.issuedate.strftime("%d/%m/%Y")
-        expiry_date = issued_book.expirydate.strftime("%d/%m/%Y")
+        issued_book_date = issued_book.issue_date.strftime("%d/%m/%Y")
+        expiry_date = issued_book.expiry_date.strftime("%d/%m/%Y")
 
-        days = (date.today() - issued_book.issuedate).days
+        days = (date.today() - issued_book.issue_date).days
         fine = max(0, (days - 15) * 10) if days > 15 else 0
 
         books = models.Book.objects.filter(isbn=issued_book.isbn)
@@ -328,10 +297,10 @@ def view_issued_book_by_student(request):
         book = models.Book.objects.filter(isbn=issued_book.isbn).first()
 
         if book:
-            issue_date = issued_book.issuedate.strftime('%d/%m/%Y')
-            expiration_date = issued_book.expirydate.strftime('%d/%m/%Y')
+            issue_date = issued_book.issue_date.strftime('%d/%m/%Y')
+            expiration_date = issued_book.expiry_date.strftime('%d/%m/%Y')
 
-            days = (date.today() - issued_book.issuedate).days
+            days = (date.today() - issued_book.issue_date).days
             fine = max(0, (days - 15) * 10) if days > 15 else 0
 
             combined_data.append((
