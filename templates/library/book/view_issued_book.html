@@ -22,9 +22,9 @@
       <hr class="my-6 border-gray-300">
 
       {% if li %}
-      <div class="overflow-x-auto">
-        <table class="w-full border border-gray-300 text-center table-auto">
-          <thead class="bg-gray-900 text-white">
+      <div class="overflow-y-auto max-h-96 border border-gray-300 rounded-lg shadow-md">
+        <table class="min-w-full border-collapse text-center">
+          <thead class="bg-gray-900 text-white sticky top-0">
             <tr>
               <th class="py-2 px-4">Nome do Estudante</th>
               <th class="py-2 px-4">Matrícula</th>
@@ -36,16 +36,22 @@
               <th class="py-2 px-4">Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="bg-white divide-y divide-gray-300">
             {% for student_name, enrollment, book_name, author, issue_date, expiry_date, fine, status in li %}
-            <tr class="border-t border-gray-300">
+            <tr>
               <td class="py-2 px-4">{{ student_name }}</td>
               <td class="py-2 px-4">{{ enrollment }}</td>
               <td class="py-2 px-4">{{ book_name }}</td>
               <td class="py-2 px-4">{{ author }}</td>
               <td class="py-2 px-4">{{ issue_date }}</td>
               <td class="py-2 px-4">{{ expiry_date }}</td>
-              <td class="py-2 px-4">{% if status == "Returned" %}<span class="text-green-600 font-bold">Sem Multa</span>{% else %}{{ fine }}{% endif %}</td>
+              <td class="py-2 px-4">
+                {% if status == "Returned" %}
+                  <span class="text-green-600 font-bold">Sem Multa</span>
+                {% else %}
+                  {{ fine }}
+                {% endif %}
+              </td>
               <td class="py-2 px-4 font-bold">
                 <span class="{% if status == 'Issued' %}text-blue-600 bg-blue-100 px-2 py-1 rounded-lg{% else %}text-green-600 bg-green-100 px-2 py-1 rounded-lg{% endif %}">
                   {% if status == "Returned" %}Retornado{% else %}Emprestado{% endif %}

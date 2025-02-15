@@ -9,6 +9,10 @@ class StudentExtra(models.Model):
     branch = models.CharField(max_length=40)
 
 
+    def get_name(self):
+        return f'{self.user.first_name} {self.user.last_name}'
+
+
     def __str__(self):
         return f"{self.user.first_name} [{self.enrollment}]"
 

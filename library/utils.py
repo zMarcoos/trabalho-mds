@@ -41,5 +41,8 @@ STUDENT_NAV_ITEMS = [
 ]
 
 
+DAYS_UNTIL_EXPIRY = 1
+
+
 def get_expiry():
-  return timezone.now().date() + timedelta(days=15)
+  return timezone.now().date() + timedelta(days=DAYS_UNTIL_EXPIRY)

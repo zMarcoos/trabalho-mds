@@ -14,7 +14,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from library.utils import AUTH_NAV_ITEMS, ADMINISTRATOR_NAV_ITEMS, STUDENT_NAV_ITEMS
+from library.utils import AUTH_NAV_ITEMS, ADMINISTRATOR_NAV_ITEMS, STUDENT_NAV_ITEMS, DAYS_UNTIL_EXPIRY
 
 
 logger = logging.getLogger(__name__)
@@ -218,11 +218,19 @@ def issue_book_action(request):
         book = form.cleaned_data.get('book')
         enrollment = form.cleaned_data.get('enrollment')
 
-        if not book or book.quantity <= 0:
+        already_issued = models.IssuedBook.objects.filter(
+            enrollment=enrollment.enrollment,
+            isbn=book.isbn,
+            status='Issued'
+        ).exists()
+
+        if not book or book.quantity <= 0 or already_issued:
             return render_form_page(request, page, form, ADMINISTRATOR_NAV_ITEMS, 'Livro indisponível para empréstimo.')
 
         models.IssuedBook.objects.create(
-            enrollment=enrollment.enrollment, isbn=book.isbn)
+            enrollment=enrollment.enrollment,
+            isbn=book.isbn
+        )
         book.quantity -= 1
         book.save()
 
@@ -252,7 +260,7 @@ def view_issued_book_view(request):
         expiry_date = issued_book.expiry_date.strftime("%d/%m/%Y")
 
         days = (date.today() - issued_book.issue_date).days
-        fine = max(0, (days - 15) * 10) if days > 15 else 0
+        fine = max(0, (days - DAYS_UNTIL_EXPIRY) * 10) if days > DAYS_UNTIL_EXPIRY else 0
 
         books = models.Book.objects.filter(isbn=issued_book.isbn)
         students = models.StudentExtra.objects.filter(
@@ -301,7 +309,7 @@ def view_issued_book_by_student(request):
             expiration_date = issued_book.expiry_date.strftime('%d/%m/%Y')
 
             days = (date.today() - issued_book.issue_date).days
-            fine = max(0, (days - 15) * 10) if days > 15 else 0
+            fine = max(0, (days - DAYS_UNTIL_EXPIRY) * 10) if days > DAYS_UNTIL_EXPIRY else 0
 
             combined_data.append((
                 student.get_name,

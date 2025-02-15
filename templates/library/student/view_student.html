@@ -22,9 +22,9 @@
       <hr class="my-6 border-gray-300">
 
       {% if students %}
-      <div class="overflow-x-auto">
-        <table class="w-full border border-gray-300 text-center table-auto">
-          <thead class="bg-gray-900 text-white">
+      <div class="overflow-y-auto max-h-96 border border-gray-300 rounded-lg shadow-md">
+        <table class="min-w-full border-collapse text-center">
+          <thead class="bg-gray-900 text-white sticky top-0">
             <tr>
               <th class="py-2 px-4">Usuário</th>
               <th class="py-2 px-4">Nome completo</th>
@@ -32,9 +32,9 @@
               <th class="py-2 px-4">Curso</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="bg-white divide-y divide-gray-300">
             {% for s in students %}
-            <tr class="border-t border-gray-300">
+            <tr>
               <td class="py-2 px-4">{{ s.user.username }}</td>
               <td class="py-2 px-4">{{ s.user.first_name }} {{ s.user.last_name }}</td>
               <td class="py-2 px-4">{{ s.enrollment }}</td>
