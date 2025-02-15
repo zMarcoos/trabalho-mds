@@ -1,26 +1,11 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Contate-nos</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
-  
-  <script src="https://unpkg.com/@tailwindcss/browser@4.0.0" integrity="sha384-fsXZ0Oru5QjGkveFx8DdmBAyKdwnJ7TnbRzDN5LROCKt8PAN8h7y7oqCwtk9cN68" crossorigin="anonymous"></script>
-</head>
-<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+{% extends "library/contact/base.html" %}
+{% block title %}Contate-nos{% endblock %}
 
-  {% include "library/navbar.html" %}
-
-  <div class="container mx-auto text-center mt-24 px-6 flex-grow">
-    <h1 class="text-5xl font-extrabold text-gray-900">Contate-nos</h1>
-    <p class="text-lg mt-4 max-w-3xl mx-auto text-gray-700">
-      Adoraríamos ouvir de você! Se você tiver dúvidas, comentários ou sugestões, sinta-se à vontade para entrar em contato.
-    </p>
-  </div>
+{% block content %}
+  <h1 class="text-5xl font-extrabold text-gray-900">Contate-nos</h1>
+  <p class="text-lg mt-4 max-w-3xl mx-auto text-gray-700">
+    Adoraríamos ouvir de você! Se tiver dúvidas, comentários ou sugestões, sinta-se à vontade para entrar em contato.
+  </p>
 
   <div class="flex flex-col items-center text-center mt-10 px-6 flex-grow mb-6">
     <form method="POST" action="{% url 'contactus_action' %}" class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
@@ -44,8 +29,4 @@
       });
     });
   </script>
-
-  {% include "library/footer.html" %}
-
-</body>
-</html>
+{% endblock %}
