@@ -76,13 +76,13 @@ EMAIL_RECEIVING_USER = 'seuemail@gmail.com'
 
 ---
 
-## ⚠ Problemas Corrigidos  
+## ⚠️ Problemas Corrigidos  
  
 ✅ **Correção no cálculo de multas:** O sistema agora calcula corretamente a multa por atraso.  
 ✅ **Melhorias no login:** Implementação de validação extra para evitar acessos indevidos.  
 
 ---
 
-## 💡 Agradecimentos ao Sumit Kumar (Desenvolvedor do projeto original) 
-Aqui está o link para o repositório do projeto inspecionado e refatorado: https://github.com/sumitkumar1503/librarymanagement 
+## ❤️ Agradecimentos ao Sumit Kumar (Desenvolvedor do projeto original) 
+Aqui está o link para o repositório do projeto original, que foi inspecionado e refatorado por nós: https://github.com/sumitkumar1503/librarymanagement 
 ```
